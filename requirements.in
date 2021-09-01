@@ -2,3 +2,6 @@ wheel
 fastapi[all]
 black
 pytest
+aiofiles
+ipython
+pydantic[dotenv]
