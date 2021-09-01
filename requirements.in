@@ -1,3 +1,4 @@
 wheel
 fastapi[all]
 black
+pytest
