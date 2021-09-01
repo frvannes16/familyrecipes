@@ -5,6 +5,7 @@ from pydantic.env_settings import BaseSettings
 # See https://pydantic-docs.helpmanual.io/usage/settings/#parsing-environment-variable-values
 class Settings(BaseSettings):
     database_url: str
+    database_name: str
 
     class Config:
         env_file = ".env"
