@@ -5,3 +5,5 @@ pytest
 aiofiles
 ipython
 pydantic[dotenv]
+sqlalchemy[asyncio]
+alembic
