@@ -13,7 +13,7 @@ Family Recipes is a website for storing your family's recipes.
 5. Copy the `.env-example` file into a `.env` file. The app will parse the variables in `.env` in into the app settings, in addition to any environment variables that you have set.
 6. Run the migrations:
 ```bash
-pushd api && alembic upgrade head && popd
+alembic upgrade head
 ```
 7. Start the app using uvicorn. `uvicorn api.main:app --reload`. The reload flag will listen for any changes.
 8. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!

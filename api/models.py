@@ -1,7 +1,7 @@
 from sqlalchemy import String, Column, Integer, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from api.database import Base
 
 
 class Recipe(Base):
