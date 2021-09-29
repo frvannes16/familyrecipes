@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from settings import settings
+from .settings import settings
 
-if "sqllite" in settings.database_url:
+if "sqlite" in settings.database_url:
     engine = create_engine(
         settings.database_url, connect_args={"check_same_thread": False}
     )
