@@ -4,9 +4,9 @@
 - [X] Create an Alembic migration to create the table.
 - [X] Document Alembic commands
 - [x] Connect pydantic to User model
-- [ ] Create User endpoints
+- [X] Create User endpoints
 - [x] Test User endpoints
-- [x] Create DB test zxdclient inside of api/tests/testcase that will setup and teardown databases. See https://fastapi.tiangolo.com/advanced/testing-database/
+- [x] Create DB test client inside of api/tests/testcase that will setup and teardown databases. See https://fastapi.tiangolo.com/advanced/testing-database/
 - [ ] Connect Pydantic to Recipe model.
 - [ ] Create GET /recipes endpoint.
 - [ ] Add authentication to users and user model.
