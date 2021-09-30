@@ -11,6 +11,7 @@
 - [ ] Create GET /recipes endpoint.
 - [X] Add authentication to users and user model. Do email and password auth for now.
 - [ ] Cleanup files
+- [ ] Add admin user role.
 
 If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
 
