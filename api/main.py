@@ -3,23 +3,20 @@ from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
-from . import schemas, crud
-from .database import SessionLocal, engine
+from api import schemas, crud, auth
+from api.database import get_db
 
 app = FastAPI()
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@app.get("/users/me/", response_model=schemas.AuthenticatedUser)
+async def get_my_user(user: schemas.AuthenticatedUser = Depends(auth.get_current_user)):
+    return user
 
 
 @app.get("/users/{user_id}/", response_model=schemas.User)
@@ -30,14 +27,7 @@ async def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@app.post("/users/", response_model=schemas.User)
-async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.create_user(db, user)
-    if db_user:
-        return db_user
-    else:
-        raise HTTPException(status_code=500, detail="Could not create user")
-
+app.include_router(auth.router)
 
 # Mount the html staticfile loader so that we don't override other endpoints.
 # This is the last URI to resolve.

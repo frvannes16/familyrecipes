@@ -1,10 +1,11 @@
 import os
+from typing import Optional
 from unittest import TestCase
 import logging
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from ..database import Base
 from ..main import app, get_db
@@ -13,7 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 class DBTestCase(TestCase):
+    """
+    This special test case class creates a new database with every test setup, and destroys the database on teardown.
+    You can access the client that uses the test DB by using `self.client`
+    e.g.
+    ```python
+    response = self.client.get("/")
+    ```
+
+    You can also access the test DB by invoking `self.db`
+    e.g.
+    ```python
+    user_count = self.db.query(models.User).count()
+    ```
+    """
+
     TEST_DB_LOCATION = "./test.db"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def setUp(self):
         self.db_setup()
@@ -37,7 +56,7 @@ class DBTestCase(TestCase):
         )
 
         def override_get_test_db():
-            db = None
+            db: Optional[Session] = None
             try:
                 db = TestingSessionLocal()
                 yield db
@@ -49,8 +68,12 @@ class DBTestCase(TestCase):
         app.dependency_overrides[get_db] = override_get_test_db
 
         self.client = TestClient(app)
+        self.db: Session = TestingSessionLocal()
 
     def db_teardown(self):
+        if self.db:
+            self.db.close()
+
         # destroy the test db by simply deleting the file.
 
         logger.debug("Destroying the test DB.")

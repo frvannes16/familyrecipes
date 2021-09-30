@@ -9,6 +9,11 @@
 - [x] Create DB test client inside of api/tests/testcase that will setup and teardown databases. See https://fastapi.tiangolo.com/advanced/testing-database/
 - [ ] Connect Pydantic to Recipe model.
 - [ ] Create GET /recipes endpoint.
-- [ ] Add authentication to users and user model.
+- [X] Add authentication to users and user model. Do email and password auth for now.
+- [ ] Cleanup files
 
 If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
+
+For later:
+- [ ] Package pydantic PasswordStr into its own pypi package.   
+

@@ -12,6 +12,8 @@ alembic==1.7.1
     # via -r requirements.in
 aniso8601==7.0.0
     # via graphene
+argon2-cffi==21.1.0
+    # via -r requirements.in
 async-exit-stack==1.0.1
     # via fastapi
 async-generator==1.10
@@ -24,16 +26,24 @@ black==21.8b0
     # via -r requirements.in
 certifi==2021.5.30
     # via requests
+cffi==1.14.6
+    # via
+    #   argon2-cffi
+    #   cryptography
 charset-normalizer==2.0.4
     # via requests
 click==7.1.2
     # via
     #   black
     #   uvicorn
+cryptography==3.4.8
+    # via python-jose
 decorator==5.0.9
     # via ipython
 dnspython==2.1.0
     # via email-validator
+ecdsa==0.17.0
+    # via python-jose
 email-validator==1.1.3
     # via
     #   -r requirements.in
@@ -104,6 +114,12 @@ ptyprocess==0.7.0
     # via pexpect
 py==1.10.0
     # via pytest
+pyasn1==0.4.8
+    # via
+    #   python-jose
+    #   rsa
+pycparser==2.20
+    # via cffi
 pydantic[dotenv]==1.8.2
     # via
     #   -r requirements.in
@@ -118,6 +134,8 @@ python-dotenv==0.19.0
     # via
     #   pydantic
     #   uvicorn
+python-jose[cryptography]==3.3.0
+    # via -r requirements.in
 python-multipart==0.0.5
     # via fastapi
 pyyaml==5.4.1
@@ -128,10 +146,13 @@ regex==2021.8.28
     # via black
 requests==2.26.0
     # via fastapi
+rsa==4.7.2
+    # via python-jose
 rx==1.6.1
     # via graphql-core
 six==1.16.0
     # via
+    #   ecdsa
     #   graphene
     #   graphql-core
     #   graphql-relay

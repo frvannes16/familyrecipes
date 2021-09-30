@@ -8,3 +8,5 @@ pydantic[dotenv]
 email-validator
 sqlalchemy[asyncio]
 alembic
+argon2-cffi
+python-jose[cryptography]

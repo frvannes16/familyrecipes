@@ -1,4 +1,5 @@
 from os import path
+from typing import Optional
 
 from pydantic.env_settings import BaseSettings
 
@@ -23,6 +24,9 @@ def _dot_env_path() -> str:
 class Settings(BaseSettings):
     database_url: str
     database_name: str
+    secret_key: str
+    google_client_id: Optional[str]
+    google_client_secret: Optional[str]
 
     class Config:
         env_file = _dot_env_path()
