@@ -1,0 +1,9 @@
+{
+  "name": "familyrecipes",
+  "version": "1.0.0",
+  "description": "A website frontend for storing and sharing family recipes",
+  "main": "index.js",
+  "repository": "git@github.com:frvannes16/familyrecipes.git",
+  "author": "Franklin van Nes <franklin.vannes@gmail.com>",
+  "license": "MIT"
+}

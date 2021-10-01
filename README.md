@@ -15,8 +15,10 @@ Family Recipes is a website for storing your family's recipes.
 ```bash
 alembic upgrade head
 ```
-7. Start the app using uvicorn. `uvicorn api.main:app --reload`. The reload flag will listen for any changes.
-8. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
+7. Install `yarn` if it isn't already installed: `npm install -g yarn`.
+8. Install frontend dependencies: `pushd frontend && yarn && popd`.
+9. Start the api using uvicorn. `uvicorn api.main:app --reload`. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
+10. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
 
 
 ## Migrations
