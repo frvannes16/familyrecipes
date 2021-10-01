@@ -115,11 +115,10 @@ class AuthTestCase(DBTestCase):
         response = self.client.post("/auth/token/", data=login_form)
         assert response.status_code == 200
 
-        assert response.json()["email"] == "user@example.com"
-        assert response.json()["token"]["name"] == "OAuth2"
-        assert response.json()["token"]["access_token"] is not None
+        assert response.json()["access_token"] is not None
+        assert response.json()["token_type"] == "bearer"
 
-        access_token = response.json()["token"]["access_token"]
+        access_token = response.json()["access_token"]
         token_count = self.db.query(OAuth2Token).count()
         assert token_count == 1
         db_token = self.db.query(OAuth2Token).first()
@@ -155,38 +154,27 @@ class AuthTestCase(DBTestCase):
         assert second_login_response.status_code == 200
 
         # The tokens should match, except for JWT and expiration, simply because the expiration updated.
+
         assert (
-            first_login_response.json()["email"]
-            == second_login_response.json()["email"]
-        )
-        assert (
-            first_login_response.json()["token"]["name"]
-            == second_login_response.json()["token"]["name"]
-        )
-        assert (
-            first_login_response.json()["token"]["token_type"]
-            == second_login_response.json()["token"]["token_type"]
+            first_login_response.json()["token_type"]
+            == second_login_response.json()["token_type"]
+            == "bearer"
         )
 
         assert (
-            first_login_response.json()["token"]["expires_at"]
-            != second_login_response.json()["token"]["expires_at"]
-        )
-
-        assert (
-            first_login_response.json()["token"]["access_token"]
-            != second_login_response.json()["token"]["access_token"]
+            first_login_response.json()["access_token"]
+            != second_login_response.json()["access_token"]
         )
 
         # Decrypt the JWT tokens and compare their contents.
 
         first_resp_jwt = jwt.decode(
-            first_login_response.json()["token"]["access_token"],
+            first_login_response.json()["access_token"],
             settings.secret_key,
             algorithms=[JWT_ALGORITHM],
         )
         second_resp_jwt = jwt.decode(
-            second_login_response.json()["token"]["access_token"],
+            second_login_response.json()["access_token"],
             settings.secret_key,
             algorithms=[JWT_ALGORITHM],
         )
@@ -226,10 +214,14 @@ class AuthTestCase(DBTestCase):
         login_response = self.client.post("/auth/token/", data=login_form)
         assert login_response.status_code == status.HTTP_200_OK
 
-        jwt_token = login_response.json()["token"]["access_token"]
+        jwt_token = login_response.json()["access_token"]
 
         # Retry the earlier request for user data, and include the user's token in the response.
         response = self.client.get(
             "/users/me/", headers={"Authorization": f"bearer {jwt_token}"}
         )
         assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["email"] == "user@example.com"
+        assert data["role"] == "MEMBER"
+        assert data["token"]["access_token"] is not None

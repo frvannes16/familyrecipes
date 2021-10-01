@@ -76,6 +76,7 @@ class UserBase(BaseModel):
 
 class AuthenticatedUser(UserBase):  # We only need to show the user their own token.
     token: Token
+    role: str
 
     class Config:
         orm_mode = True

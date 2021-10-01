@@ -30,7 +30,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # Dependencies
 async def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
-):
+) -> schemas.AuthenticatedUser:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -63,7 +63,9 @@ async def get_current_user(
 
     # Construct response object.
     authenticated_user = schemas.AuthenticatedUser(
-        **schemas.User.from_orm(user).dict(), token=schemas.Token.from_orm(db_token)
+        **schemas.User.from_orm(user).dict(),
+        token=schemas.Token.from_orm(db_token),
+        role=user.role.value
     )
     return authenticated_user
 
@@ -104,7 +106,9 @@ async def login(
     # Generate and save an OAuth2 token.
 
     access_token_expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token_data = {"sub": str(authenticated_user.email)}
+    access_token_data = {
+        "sub": str(authenticated_user.email),
+    }
     if authenticated_user.full_name:
         access_token_data.update({"name": authenticated_user.full_name})
 

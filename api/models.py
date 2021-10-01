@@ -1,9 +1,15 @@
 from typing import Optional
+import enum
 
-from sqlalchemy import String, Column, Integer, TIMESTAMP, ForeignKey, Boolean
+from sqlalchemy import String, Column, Integer, TIMESTAMP, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from api.database import Base
+
+
+class Role(str, enum.Enum):
+    ADMIN = "ADMIN"
+    MEMBER = "MEMBER"
 
 
 class Recipe(Base):
@@ -26,6 +32,12 @@ class User(Base):
     last_name = Column(String, nullable=True)
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
+    role: Column[Role] = Column(
+        Enum(Role),
+        default=Role.MEMBER.value,
+        server_default=Role.MEMBER.value,
+        nullable=False,
+    )
 
     recipes = relationship("Recipe", back_populates="author")
     token = relationship("OAuth2Token", back_populates="user", uselist=False)
@@ -37,6 +49,9 @@ class User(Base):
                 return f"{self.first_name} {self.last_name}"
             return self.first_name
         return None
+
+    def is_admin(self):
+        return self.role == Role.ADMIN
 
 
 class OAuth2Token(Base):
