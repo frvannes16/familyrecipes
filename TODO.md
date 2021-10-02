@@ -11,7 +11,9 @@
 - [ ] Create GET /recipes endpoint.
 - [X] Add authentication to users and user model. Do email and password auth for now.
 - [ ] Cleanup files
-- [ ] Add admin user role.
+- [X] Add admin user role.
+- [ ] Autogenerate axios methods from fastapi swagger file. Add package.json script or python script for it.
+- [ ] Investigate CSRF? 
 
 If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
 
