@@ -146,7 +146,9 @@ pyyaml==5.4.1
 regex==2021.8.28
     # via black
 requests==2.26.0
-    # via fastapi
+    # via
+    #   -r requirements.in
+    #   fastapi
 rsa==4.7.2
     # via python-jose
 rx==1.6.1
