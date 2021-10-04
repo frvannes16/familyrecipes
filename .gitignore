@@ -8,3 +8,5 @@ db.sqlite
 
 
 todo.md
+localhost.crt
+localhost.key

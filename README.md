@@ -17,7 +17,14 @@ alembic upgrade head
 ```
 7. Install `yarn` if it isn't already installed: `npm install -g yarn`.
 8. Install frontend dependencies: `pushd frontend && yarn && popd`.
-9. Start the api using uvicorn. `uvicorn api.main:app --reload`. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
+8. Generate your own self-signed SSL certificate and key:
+```
+openssl req -x509 -out localhost.crt -keyout localhost.key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+```
+9. Start the api using uvicorn. `uvicorn api.main:app --reload --ssl-keyfile=./localhost.key --ssl-certfile=localhost.crt `. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev --https`.
 10. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
 
 
