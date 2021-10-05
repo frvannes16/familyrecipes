@@ -114,9 +114,14 @@ class AuthTestCase(DBTestCase):
 
         response = self.client.post("/auth/token/", data=login_form)
         assert response.status_code == 200
-
-        assert response.json()["access_token"] is not None
+        token = response.json()["access_token"]
+        assert token is not None
         assert response.json()["token_type"] == "bearer"
+
+        set_cookie_header = response.headers["set-cookie"]
+        assert f'access_token="bearer {token}"' in set_cookie_header
+        # assert "HttpOnly" in set_cookie_header
+        # assert "Secure" in set_cookie_header
 
         access_token = response.json()["access_token"]
         token_count = self.db.query(OAuth2Token).count()
@@ -213,13 +218,14 @@ class AuthTestCase(DBTestCase):
         # Login the first time.
         login_response = self.client.post("/auth/token/", data=login_form)
         assert login_response.status_code == status.HTTP_200_OK
+        assert login_response.cookies.get("access_token") is not None
+        assert self.client.cookies.get("access_token") is not None
 
         jwt_token = login_response.json()["access_token"]
 
         # Retry the earlier request for user data, and include the user's token in the response.
-        response = self.client.get(
-            "/users/me/", headers={"Authorization": f"bearer {jwt_token}"}
-        )
+        response = self.client.get("/users/me/")
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["email"] == "user@example.com"

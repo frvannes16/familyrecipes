@@ -9,7 +9,7 @@ from api.database import get_db
 
 app = FastAPI()
 
-origins = ["http://localhost:3000"]  # TODO: make production-ready.
+origins = ["*"]  # TODO: make production-ready.
 
 app.add_middleware(
     CORSMiddleware,

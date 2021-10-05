@@ -52,7 +52,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { NButton, NInput, NForm, NFormItem, NTabs, NTabPane, NFormItemRow, NCard } from 'naive-ui';
-import api from "../api/requests";
+import { axiosConfigFactory, AuthApiFactory } from "../api/index";
+import { RouteLocationRaw } from "vue-router";
 
 
 export default defineComponent({
@@ -76,44 +77,41 @@ export default defineComponent({
         onSignUp() {
             // create a new user.
             console.log("on Sign Up ", this.signup)
-            const responsePromise = api.post("/auth/users/", {
+            const api = AuthApiFactory(undefined, axiosConfigFactory().basePath);
+            const createUserResponse = api.createUserAuthUsersPost({
                 email: this.signup.email,
-                password: this.signup.password
+                password: this.signup.password,
             });
-            responsePromise.then(response => {
+            createUserResponse.then(response => {
                 if (response?.status == 200 && response?.data) {
                     console.log("user succesfully created. Signing in");
-                    this.signIn(this.signup.email, this.signup.password).then(response => {
-                        if (response?.status == 200 && response?.data?.access_token) {
-                            console.log(response.data.access_token);
-                        }
-                    });
-                } else {
-                    console.log(response);
+                    api.loginAuthTokenPost(response.data.email, this.signup.password)
+                        .then(response => {
+                            if (response.status == 200 && response.data.access_token) {
+                                this.navigateToUserPage();
+                            }
+                        });
                 }
             }).catch(error => {
                 console.error(error);
             })
         },
         onSignIn() {
+            const api = AuthApiFactory(undefined, axiosConfigFactory().basePath);
             if (this.signin.email && this.signin.password) {
-                this.signIn(this.signin.email, this.signin.password).then(response => {
-                    if (response?.status == 200 && response?.data?.access_token) {
-                        console.log(response.data.access_token);
+                api.loginAuthTokenPost(this.signin.email, this.signin.password).then(response => {
+                    if (response?.status == 200 && response.data.access_token) {
+                        this.navigateToUserPage();
                     }
                 });
             }
 
         },
-        signIn(email: string, password: string) {
-            let formData = new FormData();
-            formData.append("username", email);
-            formData.append("password", password);
-            // Authenticate the user.
-            const responsePromise = api.post("/auth/token/", formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
-            return responsePromise;
+        navigateToUserPage() {
+            const to: RouteLocationRaw = {
+                name: 'myrecipes'
+            };
+            this.$router.push(to);  // unhandled promise
         }
     }
 })

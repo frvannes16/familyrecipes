@@ -3,9 +3,9 @@ from datetime import timedelta, datetime
 from typing import Optional
 
 
-from fastapi import Depends, APIRouter, status
+from fastapi import Depends, APIRouter, status, Response
 from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import argon2
 from jose import JWTError, jwt
@@ -14,10 +14,11 @@ from api import schemas, crud
 from api.crud import get_user_by_email
 from api.database import get_db
 from api.settings import settings
+from api.utils import OAuth2PasswordBearerWithCookie
 
 ph = argon2.PasswordHasher()
 
-oauth2_scheme = OAuth2PasswordBearer(
+oauth2_scheme = OAuth2PasswordBearerWithCookie(
     tokenUrl="auth/token/"
 )  # define oauth url inside of auth router endpoint domain.
 
@@ -28,9 +29,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 10
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 # Dependencies
+
+
 async def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
 ) -> schemas.AuthenticatedUser:
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -65,7 +69,7 @@ async def get_current_user(
     authenticated_user = schemas.AuthenticatedUser(
         **schemas.User.from_orm(user).dict(),
         token=schemas.Token.from_orm(db_token),
-        role=user.role.value
+        role=user.role.value,
     )
     return authenticated_user
 
@@ -91,7 +95,9 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     "/token/", response_model=schemas.AuthenticationResponse
 )  # corresponds to oauth2_scheme tokenUrl
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
 ):
     authenticated_user = authenticate_user(
         db, form_data.username, schemas.PasswordStr(form_data.password)
@@ -124,6 +130,14 @@ async def login(
     )
 
     crud.update_or_create_user_token(db, authenticated_user.id, token)
+
+    response.set_cookie(
+        key="access_token",
+        value=f"bearer {str(access_token)}",
+        # httponly=True,  # TODO: secure.
+        # domain="https://localhost:8000",
+        # secure=True,
+    )
 
     return {"access_token": access_token, "token_type": "bearer"}
 

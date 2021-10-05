@@ -1,8 +1,11 @@
-import axios from "axios";
 
-const api = axios.create({
-    baseURL: 'http://localhost:8000',
-    timeout: 1000,
-});
 
-export default api;
+const axiosConfigFactory = () => {
+    return {
+        basePath: 'http://localhost:8000',  // TODO: Productionize. Everything will be static and same origin.
+        timeout: 1000
+    }
+}
+
+
+export default axiosConfigFactory;

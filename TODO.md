@@ -20,3 +20,4 @@ If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
 For later:
 - [ ] Package pydantic PasswordStr into its own pypi package.   
 
+
