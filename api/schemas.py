@@ -1,6 +1,7 @@
-from typing import Optional, Literal
-from pydantic import BaseModel, EmailStr, SecretStr
 import datetime
+from typing import Optional, Literal
+
+from pydantic import BaseModel, EmailStr, SecretStr
 
 
 class PasswordStr(SecretStr):
@@ -107,3 +108,37 @@ class User(UserBase):
 class AuthenticationResponse(BaseModel):
     access_token: str
     token_type: Literal["bearer"]
+
+
+# RECIPES
+
+
+class RecipeBase(BaseModel):
+    name: str
+    steps: str
+    author_id: int
+
+
+class RecipeCreate(RecipeBase):
+    pass
+
+
+class RecipeInDB(RecipeBase):
+    created_at: datetime.datetime
+    author: User
+
+    class Config:
+        orm_mode = True
+
+
+class RecipeSearch(BaseModel):
+    page: int = 1
+    per_page: int = 10
+
+
+class PaginatedRecipes(BaseModel):
+    page: int
+    per_page: int
+    max_page: int
+    result_count: int
+    data: list[RecipeInDB]

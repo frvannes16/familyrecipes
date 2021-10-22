@@ -57,3 +57,29 @@ def update_or_create_user_token(
     db.commit()
     db.refresh(db_token)
     return db_token
+
+
+def get_recipe(db: Session, recipe_id: int):
+    return db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
+
+
+def get_recipes(
+    db: Session, recipe_params: schemas.RecipeSearch
+) -> schemas.PaginatedRecipes:
+    recipe_count = db.query(models.Recipe).count()
+    max_page = max(
+        recipe_count // recipe_params.per_page
+        + (
+            recipe_count % recipe_params.per_page > 1 & 1
+        ),  # Add one if there is any remainder
+        1,
+    )
+    offset = recipe_params.per_page * (recipe_params.page - 1)
+    recipes = db.query(models.Recipe).limit(recipe_params.per_page).offset(offset)
+    return schemas.PaginatedRecipes(
+        page=recipe_params.page,
+        max_page=max_page,
+        per_page=recipe_params.per_page,
+        result_count=recipe_count,
+        data=[schemas.RecipeInDB.from_orm(recipe) for recipe in recipes],
+    )
