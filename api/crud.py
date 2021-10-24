@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.orm import Session
 from argon2 import PasswordHasher
 
@@ -64,22 +66,27 @@ def get_recipe(db: Session, recipe_id: int):
 
 
 def get_recipes(
-    db: Session, recipe_params: schemas.RecipeSearch
+    db: Session, recipe_params: schemas.RecipeSearch, author_id: Optional[int] = None
 ) -> schemas.PaginatedRecipes:
-    recipe_count = db.query(models.Recipe).count()
+    recipe_qs = db.query(models.Recipe)
+
+    # Filter by author, if required.
+    if author_id:
+        recipe_qs = recipe_qs.filter(models.Recipe.author_id == author_id)
+    total_recipe_count = recipe_qs.count()
     max_page = max(
-        recipe_count // recipe_params.per_page
+        total_recipe_count // recipe_params.per_page
         + (
-            recipe_count % recipe_params.per_page > 1 & 1
+            total_recipe_count % recipe_params.per_page > 1 & 1
         ),  # Add one if there is any remainder
         1,
     )
     offset = recipe_params.per_page * (recipe_params.page - 1)
-    recipes = db.query(models.Recipe).limit(recipe_params.per_page).offset(offset)
+    recipe_qs = recipe_qs.limit(recipe_params.per_page).offset(offset)
     return schemas.PaginatedRecipes(
         page=recipe_params.page,
         max_page=max_page,
         per_page=recipe_params.per_page,
-        result_count=recipe_count,
-        data=[schemas.RecipeInDB.from_orm(recipe) for recipe in recipes],
+        result_count=total_recipe_count,
+        data=[schemas.RecipeInDB.from_orm(recipe) for recipe in recipe_qs],
     )

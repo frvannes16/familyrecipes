@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -36,7 +36,9 @@ async def get_my_user(user: schemas.AuthenticatedUser = Depends(auth.get_current
 async def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id)
     if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return db_user
 
 
@@ -47,6 +49,21 @@ async def get_recipes(
     db: Session = Depends(get_db),
 ):
     return crud.get_recipes(db=db, recipe_params=params)
+
+
+@app.get("/users/{author_id}/recipes/", response_model=schemas.PaginatedRecipes)
+async def get_user_recipes(
+    author_id: int,
+    params: schemas.RecipeSearch = Depends(),
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get author or 404
+    if not crud.get_user(db, author_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist"
+        )
+    return crud.get_recipes(db=db, recipe_params=params, author_id=author_id)
 
 
 app.include_router(auth.router)

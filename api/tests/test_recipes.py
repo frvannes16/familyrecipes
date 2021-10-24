@@ -9,8 +9,8 @@ from api.schemas import UserCreate
 
 
 class GetRecipesTest(DBTestCase):
-    def create_100_test_recipes(self, author_id: int):
-        for idx in range(100):
+    def create_test_recipes(self, author_id: int, count: int):
+        for idx in range(count):
             recipe = models.Recipe(
                 name=f"Recipe #{idx}",
                 steps="Step 1: Done!",
@@ -46,7 +46,7 @@ class GetRecipesTest(DBTestCase):
         # TEST
 
         # Create 100 recipes
-        self.create_100_test_recipes(author_id=created_user.id)
+        self.create_test_recipes(author_id=created_user.id, count=100)
 
         # Just retrieves the first 10
         response = self.client.get("/recipes/")
@@ -64,7 +64,7 @@ class GetRecipesTest(DBTestCase):
         created_user = self.setUpSessionUser()
 
         # Create 100 recipes
-        self.create_100_test_recipes(author_id=created_user.id)
+        self.create_test_recipes(author_id=created_user.id, count=100)
 
         # Just retrieves the first 80
         response = self.client.get("/recipes/?per_page=80&page=1")
@@ -98,8 +98,8 @@ class GetRecipesTest(DBTestCase):
 
         # TEST
 
-        # Create 100 recipes
-        self.create_100_test_recipes(author_id=created_user.id)
+        # Create 100 recipes that belong to the user
+        self.create_test_recipes(author_id=created_user.id, count=100)
 
         # Get page 2 for 100 recipes per page. This should be out of bounds and return no results.
         response = self.client.get("/recipes/?per_page=100&page=2")
@@ -110,3 +110,33 @@ class GetRecipesTest(DBTestCase):
         assert response.json()["per_page"] == 100
         assert response.json()["max_page"] == 1
         assert response.json()["result_count"] == 100
+
+    def test_get_my_recipes(self):
+        created_user = self.setUpSessionUser()
+
+        # Create 15 recipes that belong to the session user.
+        self.create_test_recipes(created_user.id, 15)
+
+        # Create a secondary user and create 10 recipes belonging to them.
+        other_user = UserCreate(password="aBadPa$$w0rd!!", email="test2@example.com")
+        created_other_user = create_user(db=self.db, user=other_user)
+        self.create_test_recipes(created_other_user.id, 10)
+
+        # Retrieve all recipes. There should be 25 in total
+        response = self.client.get("/recipes/?per_page=100")
+        assert response.status_code == status.HTTP_200_OK, response.json()
+        assert response.json()["result_count"] == 25
+        assert len(response.json()["data"]) == 25
+
+        # Retrieve only this user's recipes. There should be 15 in total.
+        response = self.client.get(f"/users/{created_user.id}/recipes/?per_page=100")
+        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.json()["result_count"] == 15
+        assert len(response.json()["data"]) == 15
+        assert response.json()["data"][0]["author"]["email"] == "test@example.com"
+
+    def test_get_missing_author_returns_404(self):
+        _session_user = self.setUpSessionUser()
+
+        response = self.client.get("/users/999/recipes/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
