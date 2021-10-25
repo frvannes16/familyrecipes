@@ -102,6 +102,80 @@ export interface HTTPValidationError {
 /**
  * 
  * @export
+ * @interface PaginatedRecipes
+ */
+export interface PaginatedRecipes {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedRecipes
+     */
+    page: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedRecipes
+     */
+    per_page: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedRecipes
+     */
+    max_page: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedRecipes
+     */
+    result_count: number;
+    /**
+     * 
+     * @type {Array<RecipeInDB>}
+     * @memberof PaginatedRecipes
+     */
+    data: Array<RecipeInDB>;
+}
+/**
+ * 
+ * @export
+ * @interface RecipeInDB
+ */
+export interface RecipeInDB {
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeInDB
+     */
+    name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeInDB
+     */
+    steps: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof RecipeInDB
+     */
+    author_id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeInDB
+     */
+    created_at: string;
+    /**
+     * 
+     * @type {User}
+     * @memberof RecipeInDB
+     */
+    author: User;
+}
+/**
+ * 
+ * @export
  * @interface Token
  */
 export interface Token {
@@ -466,9 +540,53 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication OAuth2PasswordBearer required
+            // authentication OAuth2PasswordBearerWithCookie required
             // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearer", [], configuration)
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get Recipes
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRecipesRecipesGet: async (page?: number, perPage?: number, options: any = {}): Promise<RequestArgs> => {
+            const localVarPath = `/recipes/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['per_page'] = perPage;
+            }
 
 
     
@@ -503,6 +621,54 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get User Recipes
+         * @param {number} authorId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserRecipesUsersAuthorIdRecipesGet: async (authorId: number, page?: number, perPage?: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'authorId' is not null or undefined
+            assertParamExists('getUserRecipesUsersAuthorIdRecipesGet', 'authorId', authorId)
+            const localVarPath = `/users/{author_id}/recipes/`
+                .replace(`{${"author_id"}}`, encodeURIComponent(String(authorId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['per_page'] = perPage;
+            }
 
 
     
@@ -567,6 +733,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get Recipes
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRecipesRecipesGet(page?: number, perPage?: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedRecipes>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRecipesRecipesGet(page, perPage, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get User By Id
          * @param {number} userId 
          * @param {*} [options] Override http request option.
@@ -574,6 +752,19 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getUserByIdUsersUserIdGet(userId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUserByIdUsersUserIdGet(userId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get User Recipes
+         * @param {number} authorId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUserRecipesUsersAuthorIdRecipesGet(authorId: number, page?: number, perPage?: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedRecipes>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserRecipesUsersAuthorIdRecipesGet(authorId, page, perPage, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -607,6 +798,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Get Recipes
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRecipesRecipesGet(page?: number, perPage?: number, options?: any): AxiosPromise<PaginatedRecipes> {
+            return localVarFp.getRecipesRecipesGet(page, perPage, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get User By Id
          * @param {number} userId 
          * @param {*} [options] Override http request option.
@@ -614,6 +816,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getUserByIdUsersUserIdGet(userId: number, options?: any): AxiosPromise<User> {
             return localVarFp.getUserByIdUsersUserIdGet(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get User Recipes
+         * @param {number} authorId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserRecipesUsersAuthorIdRecipesGet(authorId: number, page?: number, perPage?: number, options?: any): AxiosPromise<PaginatedRecipes> {
+            return localVarFp.getUserRecipesUsersAuthorIdRecipesGet(authorId, page, perPage, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -647,6 +861,19 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary Get Recipes
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getRecipesRecipesGet(page?: number, perPage?: number, options?: any) {
+        return DefaultApiFp(this.configuration).getRecipesRecipesGet(page, perPage, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Get User By Id
      * @param {number} userId 
      * @param {*} [options] Override http request option.
@@ -655,6 +882,20 @@ export class DefaultApi extends BaseAPI {
      */
     public getUserByIdUsersUserIdGet(userId: number, options?: any) {
         return DefaultApiFp(this.configuration).getUserByIdUsersUserIdGet(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get User Recipes
+     * @param {number} authorId 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getUserRecipesUsersAuthorIdRecipesGet(authorId: number, page?: number, perPage?: number, options?: any) {
+        return DefaultApiFp(this.configuration).getUserRecipesUsersAuthorIdRecipesGet(authorId, page, perPage, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

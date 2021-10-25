@@ -39,7 +39,7 @@
                 },
                 "security": [
                     {
-                        "OAuth2PasswordBearer": []
+                        "OAuth2PasswordBearerWithCookie": []
                     }
                 ]
             }
@@ -81,6 +81,125 @@
                         }
                     }
                 }
+            }
+        },
+        "/recipes/": {
+            "get": {
+                "summary": "Get Recipes",
+                "operationId": "get_recipes_recipes__get",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Page",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Per Page",
+                            "type": "integer",
+                            "default": 10
+                        },
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedRecipes"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
+        "/users/{author_id}/recipes/": {
+            "get": {
+                "summary": "Get User Recipes",
+                "operationId": "get_user_recipes_users__author_id__recipes__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Author Id",
+                            "type": "integer"
+                        },
+                        "name": "author_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Page",
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Per Page",
+                            "type": "integer",
+                            "default": 10
+                        },
+                        "name": "per_page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedRecipes"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
             }
         },
         "/auth/users/": {
@@ -269,6 +388,75 @@
                     }
                 }
             },
+            "PaginatedRecipes": {
+                "title": "PaginatedRecipes",
+                "required": [
+                    "page",
+                    "per_page",
+                    "max_page",
+                    "result_count",
+                    "data"
+                ],
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "title": "Page",
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "title": "Per Page",
+                        "type": "integer"
+                    },
+                    "max_page": {
+                        "title": "Max Page",
+                        "type": "integer"
+                    },
+                    "result_count": {
+                        "title": "Result Count",
+                        "type": "integer"
+                    },
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RecipeInDB"
+                        }
+                    }
+                }
+            },
+            "RecipeInDB": {
+                "title": "RecipeInDB",
+                "required": [
+                    "name",
+                    "steps",
+                    "author_id",
+                    "created_at",
+                    "author"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "steps": {
+                        "title": "Steps",
+                        "type": "string"
+                    },
+                    "author_id": {
+                        "title": "Author Id",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "author": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                }
+            },
             "Token": {
                 "title": "Token",
                 "required": [
@@ -382,7 +570,7 @@
             }
         },
         "securitySchemes": {
-            "OAuth2PasswordBearer": {
+            "OAuth2PasswordBearerWithCookie": {
                 "type": "oauth2",
                 "flows": {
                     "password": {
