@@ -219,6 +219,7 @@ class AuthTestCase(DBTestCase):
         login_response = self.client.post("/auth/token/", data=login_form)
         assert login_response.status_code == status.HTTP_200_OK
         assert login_response.cookies.get("access_token") is not None
+
         assert self.client.cookies.get("access_token") is not None
 
         jwt_token = login_response.json()["access_token"]

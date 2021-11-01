@@ -134,9 +134,8 @@ async def login(
     response.set_cookie(
         key="access_token",
         value=f"bearer {str(access_token)}",
-        # httponly=True,  # TODO: secure.
-        # domain="https://localhost:8000",
-        # secure=True,
+        httponly=not settings.debug,
+        secure=not settings.debug,
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
