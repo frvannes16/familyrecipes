@@ -25,7 +25,7 @@ openssl req -x509 -out localhost.crt -keyout localhost.key \
   -subj '/CN=localhost' -extensions EXT -config <( \
    printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 ```
-11. Start the api using uvicorn. `uvicorn api.main:app --reload --ssl-keyfile=./cert/CA/localhost/localhost.key --ssl-certfile=./cert/CA/localhost/localhost.crt `. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
+11. Start the api using uvicorn. `uvicorn api.main:app --ssl-keyfile=./cert/CA/localhost/localhost.key --ssl-certfile=./cert/CA/localhost/localhost.crt `. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
 12. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
 
 

@@ -76,6 +76,7 @@ class UserBase(BaseModel):
 
 
 class AuthenticatedUser(UserBase):  # We only need to show the user their own token.
+    id: int
     token: Token
     role: str
 
@@ -116,7 +117,6 @@ class AuthenticationResponse(BaseModel):
 class RecipeBase(BaseModel):
     name: str
     steps: str
-    author_id: int
 
 
 class RecipeCreate(RecipeBase):
@@ -124,7 +124,9 @@ class RecipeCreate(RecipeBase):
 
 
 class RecipeInDB(RecipeBase):
+    id: int
     created_at: datetime.datetime
+    author_id: int
     author: User
 
     class Config:

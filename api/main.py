@@ -1,10 +1,11 @@
 from typing import List
 
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_404_NOT_FOUND
 
 from api import schemas, crud, auth
 from api.database import get_db
@@ -49,6 +50,20 @@ async def get_recipes(
     db: Session = Depends(get_db),
 ):
     return crud.get_recipes(db=db, recipe_params=params)
+
+
+@app.post(
+    "/recipes/",
+    response_model=schemas.RecipeInDB,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_user_recipe(
+    recipe: schemas.RecipeCreate,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+
+    return crud.create_recipe(db, author_id=user.id, recipe=recipe)
 
 
 @app.get("/users/{author_id}/recipes/", response_model=schemas.PaginatedRecipes)

@@ -140,3 +140,45 @@ class GetRecipesTest(DBTestCase):
 
         response = self.client.get("/users/999/recipes/")
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_create_user_recipe(self):
+        session_user = self.setUpSessionUser()
+
+        recipe_count_before = self.db.query(models.Recipe).count()
+
+        self.assertEqual(recipe_count_before, 0)
+
+        recipe_data = {
+            "name": "Momma Franklin's Famous Chili",
+            "steps": "1. Make momma Franklin's famous chili\n2. Enjoy!",
+        }
+
+        response = self.client.post(f"/recipes/", json=recipe_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        data = response.json()
+        self.assertIsNotNone(data)
+        data = data.copy()
+        self.assertIsNotNone(data["created_at"])
+        data.pop("created_at")
+        self.assertEqual(
+            data,
+            {
+                "id": 1,
+                "name": "Momma Franklin's Famous Chili",
+                "steps": "1. Make momma Franklin's famous chili\n2. Enjoy!",
+                "author_id": session_user.id,
+                "author": {
+                    "email": "test@example.com",
+                    "first_name": None,
+                    "last_name": None,
+                    "id": session_user.id,
+                },
+            },
+        )
+
+        recipe_count_after = self.db.query(models.Recipe).count()
+
+        self.assertEqual(
+            recipe_count_after, recipe_count_before + 1
+        )  # new recipe created.

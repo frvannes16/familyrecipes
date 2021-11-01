@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 from argon2 import PasswordHasher
@@ -90,3 +91,15 @@ def get_recipes(
         result_count=total_recipe_count,
         data=[schemas.RecipeInDB.from_orm(recipe) for recipe in recipe_qs],
     )
+
+
+def create_recipe(db: Session, author_id: int, recipe: schemas.RecipeCreate):
+    recipe = models.Recipe(
+        name=recipe.name,
+        steps=recipe.steps,
+        author_id=author_id,
+        created_at=datetime.utcnow(),
+    )
+    db.add(recipe)
+    db.commit()
+    return recipe
