@@ -47,6 +47,12 @@ export interface AuthenticatedUser {
     last_name?: string;
     /**
      * 
+     * @type {number}
+     * @memberof AuthenticatedUser
+     */
+    id: number;
+    /**
+     * 
      * @type {Token}
      * @memberof AuthenticatedUser
      */
@@ -139,6 +145,25 @@ export interface PaginatedRecipes {
 /**
  * 
  * @export
+ * @interface RecipeCreate
+ */
+export interface RecipeCreate {
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeCreate
+     */
+    name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeCreate
+     */
+    steps: string;
+}
+/**
+ * 
+ * @export
  * @interface RecipeInDB
  */
 export interface RecipeInDB {
@@ -159,13 +184,19 @@ export interface RecipeInDB {
      * @type {number}
      * @memberof RecipeInDB
      */
-    author_id: number;
+    id: number;
     /**
      * 
      * @type {string}
      * @memberof RecipeInDB
      */
     created_at: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof RecipeInDB
+     */
+    author_id: number;
     /**
      * 
      * @type {User}
@@ -523,6 +554,46 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
+         * @summary Create User Recipe
+         * @param {RecipeCreate} recipeCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserRecipeRecipesPost: async (recipeCreate: RecipeCreate, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'recipeCreate' is not null or undefined
+            assertParamExists('createUserRecipeRecipesPost', 'recipeCreate', recipeCreate)
+            const localVarPath = `/recipes/`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(recipeCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -723,6 +794,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Create User Recipe
+         * @param {RecipeCreate} recipeCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createUserRecipeRecipesPost(recipeCreate: RecipeCreate, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RecipeInDB>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createUserRecipeRecipesPost(recipeCreate, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -789,6 +871,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @summary Create User Recipe
+         * @param {RecipeCreate} recipeCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createUserRecipeRecipesPost(recipeCreate: RecipeCreate, options?: any): AxiosPromise<RecipeInDB> {
+            return localVarFp.createUserRecipeRecipesPost(recipeCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -848,6 +940,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
+    /**
+     * 
+     * @summary Create User Recipe
+     * @param {RecipeCreate} recipeCreate 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createUserRecipeRecipesPost(recipeCreate: RecipeCreate, options?: any) {
+        return DefaultApiFp(this.configuration).createUserRecipeRecipesPost(recipeCreate, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary Get My User

@@ -136,6 +136,47 @@
                         "OAuth2PasswordBearerWithCookie": []
                     }
                 ]
+            },
+            "post": {
+                "summary": "Create User Recipe",
+                "operationId": "create_user_recipe_recipes__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecipeCreate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecipeInDB"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
             }
         },
         "/users/{author_id}/recipes/": {
@@ -291,6 +332,7 @@
                 "title": "AuthenticatedUser",
                 "required": [
                     "email",
+                    "id",
                     "token",
                     "role"
                 ],
@@ -308,6 +350,10 @@
                     "last_name": {
                         "title": "Last Name",
                         "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
                     },
                     "token": {
                         "$ref": "#/components/schemas/Token"
@@ -424,13 +470,32 @@
                     }
                 }
             },
+            "RecipeCreate": {
+                "title": "RecipeCreate",
+                "required": [
+                    "name",
+                    "steps"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "steps": {
+                        "title": "Steps",
+                        "type": "string"
+                    }
+                }
+            },
             "RecipeInDB": {
                 "title": "RecipeInDB",
                 "required": [
                     "name",
                     "steps",
-                    "author_id",
+                    "id",
                     "created_at",
+                    "author_id",
                     "author"
                 ],
                 "type": "object",
@@ -443,14 +508,18 @@
                         "title": "Steps",
                         "type": "string"
                     },
-                    "author_id": {
-                        "title": "Author Id",
+                    "id": {
+                        "title": "Id",
                         "type": "integer"
                     },
                     "created_at": {
                         "title": "Created At",
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "author_id": {
+                        "title": "Author Id",
+                        "type": "integer"
                     },
                     "author": {
                         "$ref": "#/components/schemas/User"
