@@ -45,24 +45,8 @@ class GetRecipesTest(DBTestCase):
         response = self.client.get("/recipes/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def setUpSessionUser(self):
-        # create a user
-        new_user = UserCreate(password="aBadPa$$w0rd!!", email="test@example.com")
-        created_user = create_user(db=self.db, user=new_user)
-
-        # Login in the user
-        response = self.client.post(
-            "/auth/token/",
-            data={
-                "username": new_user.email,
-                "password": new_user.password.get_secret_value(),
-            },
-        )
-        assert response.status_code == status.HTTP_200_OK, response.json()
-        return created_user
-
     def test_get_paginated_recipes_default_first_page(self):
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
 
         # TEST
 
@@ -82,7 +66,7 @@ class GetRecipesTest(DBTestCase):
         assert response.json()["result_count"] == 100
 
     def test_get_paginated_recipes_different_page_len(self):
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
 
         # Create 100 recipes
         self.create_test_recipes(author_id=created_user.id, count=100)
@@ -115,7 +99,7 @@ class GetRecipesTest(DBTestCase):
         assert response.json()["result_count"] == 100
 
     def test_get_recipes_pagination_out_of_bounds(self):
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
 
         # TEST
 
@@ -133,7 +117,7 @@ class GetRecipesTest(DBTestCase):
         assert response.json()["result_count"] == 100
 
     def test_get_my_recipes(self):
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
 
         # Create 15 recipes that belong to the session user.
         self.create_test_recipes(created_user.id, 15)
@@ -157,13 +141,13 @@ class GetRecipesTest(DBTestCase):
         assert response.json()["data"][0]["author"]["email"] == "test@example.com"
 
     def test_get_missing_author_returns_404(self):
-        _session_user = self.setUpSessionUser()
+        _session_user = self.create_and_login_user()
 
         response = self.client.get("/users/999/recipes/")
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_create_user_recipe(self):
-        session_user = self.setUpSessionUser()
+        session_user = self.create_and_login_user()
 
         recipe_count_before = self.db.query(models.Recipe).count()
 
@@ -203,3 +187,9 @@ class GetRecipesTest(DBTestCase):
         self.assertEqual(
             recipe_count_after, recipe_count_before + 1
         )  # new recipe created.
+
+
+class IngredientsTest(DBTestCase):
+    def test_put_ingredient_to_recipe(self):
+
+        self.create_and_login_user()

@@ -11,7 +11,7 @@ from api.schemas import RecipeInDB, UserCreate
 
 
 class CookbookMakerAPITest(DBTestCase):
-    def setUpSessionUser(self, email: Optional[str] = "test@example.com"):
+    def create_and_login_user(self, email: Optional[str] = "test@example.com"):
         # create a user
         new_user = UserCreate(password="aBadPa$$w0rd!!", email=email)
         created_user = create_user(db=self.db, user=new_user)
@@ -29,7 +29,7 @@ class CookbookMakerAPITest(DBTestCase):
 
     def test_generate_basic_cookbook(self):
         # SETUP: Generate a user and recipe.
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
         recipe = models.Recipe(
             name=f"Test Recipe",
             author_id=created_user.id,
@@ -79,8 +79,8 @@ class CookbookMakerAPITest(DBTestCase):
 
     def test_cookbook_generation_rejects_non_authors(self):
         # SETUP: Generate two user and recipe belonging to the first user.
-        first_user = self.setUpSessionUser(email="test1@example.com")
-        second_user = self.setUpSessionUser(email="test2@example.com")
+        first_user = self.create_and_login_user(email="test1@example.com")
+        second_user = self.create_and_login_user(email="test2@example.com")
 
         recipe = models.Recipe(
             name=f"Test Recipe",
@@ -132,7 +132,7 @@ class CookbookMakerAPITest(DBTestCase):
 
     async def test_generate_cookbook_byte_return_value(self):
         # SETUP: Generate a user and recipe.
-        created_user = self.setUpSessionUser()
+        created_user = self.create_and_login_user()
         recipe = models.Recipe(
             name=f"Test Recipe",
             steps="Step 1: Done!",

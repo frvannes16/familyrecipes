@@ -3,12 +3,15 @@ from typing import Optional
 from unittest import TestCase
 import logging
 
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from api.database import Base
 from api.main import app, get_db
+from api.schemas import UserCreate, User
+from api.crud import create_user
 
 logger = logging.getLogger(__name__)
 
@@ -78,3 +81,26 @@ class DBTestCase(TestCase):
 
         logger.debug("Destroying the test DB.")
         os.remove(self.TEST_DB_LOCATION)
+
+    def create_user(self, email="test@example.com", password="aBadPa$$w0rd!!") -> User:
+        new_user = UserCreate(password=password, email=email)
+        created_user = create_user(db=self.db, user=new_user)
+        return created_user
+
+    def login(self, email: str, password: str):
+        # Login in the user
+        response = self.client.post(
+            "/auth/token/",
+            data={
+                "username": email,
+                "password": password,
+            },
+        )
+        assert response.status_code == status.HTTP_200_OK, response.json()
+
+    def create_and_login_user(
+        self, email="test@example.com", password="aBadPa$$w0rd!!"
+    ):
+        created_user = self.create_user(email, password)
+        self.login(email, password)
+        return created_user
