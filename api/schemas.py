@@ -114,9 +114,44 @@ class AuthenticationResponse(BaseModel):
 # RECIPES
 
 
+class RecipeIngredientBase(BaseModel):
+    quantity: str
+    unit: Optional[str]
+    item: str
+    position: int
+
+
+class RecipeIngredientCreate(RecipeIngredientBase):
+    recipe_id: int
+
+
+class RecipeIngredientInDB(RecipeIngredientBase):
+    id: int
+    recipe_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RecipeStepBase(BaseModel):
+    position: int
+    content: str
+
+
+class RecipeStepCreate(RecipeStepBase):
+    recipe_id: int
+
+
+class RecipeStepInDB(RecipeStepBase):
+    id: int
+    recipe_id: int
+
+    class Config:
+        orm_mode = True
+
+
 class RecipeBase(BaseModel):
     name: str
-    steps: str
 
 
 class RecipeCreate(RecipeBase):
@@ -128,6 +163,8 @@ class RecipeInDB(RecipeBase):
     created_at: datetime.datetime
     author_id: int
     author: User
+    steps: list[RecipeStepInDB]
+    ingredients: list[RecipeIngredientInDB]
 
     class Config:
         orm_mode = True

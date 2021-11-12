@@ -3,6 +3,7 @@ import enum
 
 from sqlalchemy import String, Column, Integer, TIMESTAMP, ForeignKey, Enum
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from api.database import Base
 
@@ -16,12 +17,55 @@ class Recipe(Base):
     __tablename__ = "recipes"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    steps = Column(String)
-    author_id = Column(Integer, ForeignKey("users.id"), index=True)
-    created_at = Column(TIMESTAMP)
+    name = Column(String, nullable=False)
+    author_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    created_at = Column(TIMESTAMP, nullable=False)
 
     author = relationship("User", back_populates="recipes")
+    steps = relationship(
+        "RecipeStep", back_populates="recipe", uselist=True
+    )  # Many steps to one recipe.
+    ingredients = relationship(
+        "RecipeIngredient", back_populates="recipe", uselist=True
+    )
+
+
+class RecipeStep(Base):
+    __tablename__ = "recipe_steps"
+
+    id = Column(Integer, primary_key=True, index=True)
+    position = Column(
+        Integer, nullable=False
+    )  # The position of the step in the recipe, starting at 0.
+    content = Column(String, nullable=False)
+    recipe_id = Column(
+        Integer, ForeignKey("recipes.id"), index=True, unique=False, nullable=False
+    )
+
+    recipe = relationship(
+        "Recipe", back_populates="steps", uselist=False
+    )  # One recipe to one step.
+
+
+class RecipeIngredient(Base):
+    __tablename__ = "ingredients"
+
+    id = Column(Integer, primary_key=True, index=True)
+    quantity = Column(
+        String, nullable=False
+    )  # An integer or fraction: 1, 2, 3, 1/2, 1 3/4
+    unit = Column(
+        String, nullable=True
+    )  # An optional unit: tsp, tbsp, cup, g, kg, ml, oz
+    item = Column(
+        String, nullable=False
+    )  # The ingredient name: vegetable broth, red onion diced.
+    recipe_id = Column(Integer, ForeignKey("recipes.id"), index=True, nullable=False)
+    position = Column(
+        Integer, nullable=False
+    )  # The position of this ingredient in the recipe's ingredient list, starting at 0.
+
+    recipe = relationship("Recipe", back_populates="ingredients", uselist=False)
 
 
 class User(Base):

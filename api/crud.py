@@ -96,7 +96,6 @@ def get_recipes(
 def create_recipe(db: Session, author_id: int, recipe: schemas.RecipeCreate):
     recipe = models.Recipe(
         name=recipe.name,
-        steps=recipe.steps,
         author_id=author_id,
         created_at=datetime.utcnow(),
     )

@@ -15,12 +15,33 @@ class GetRecipesTest(DBTestCase):
         for idx in range(count):
             recipe = models.Recipe(
                 name=f"Recipe #{idx}",
-                steps="Step 1: Done!",
                 author_id=author_id,
                 created_at=datetime.datetime.utcnow(),
             )
             self.db.add(recipe)
-        self.db.commit()
+            self.db.commit()
+
+            steps = [
+                models.RecipeStep(
+                    position=idx,
+                    content=f"Add {idx + 1} flax eggs",
+                    recipe_id=recipe.id,
+                )
+                for idx in range(0, 5)
+            ]
+            ingredients = [
+                models.RecipeIngredient(
+                    position=idx,
+                    quantity=idx + 1,
+                    unit="tbsp",
+                    item="ground flax seed",
+                    recipe_id=recipe.id,
+                )
+                for idx in range(0, 5)
+            ]
+            self.db.bulk_save_objects(steps)
+            self.db.bulk_save_objects(ingredients)
+            self.db.commit()
 
     def test_get_recipes_is_restricted(self):
         response = self.client.get("/recipes/")
@@ -152,7 +173,6 @@ class GetRecipesTest(DBTestCase):
 
         recipe_data = {
             "name": "Momma Franklin's Famous Chili",
-            "steps": "1. Make momma Franklin's famous chili\n2. Enjoy!",
         }
 
         response = self.client.post(f"/recipes/", json=recipe_data)
@@ -168,7 +188,8 @@ class GetRecipesTest(DBTestCase):
             {
                 "id": 1,
                 "name": "Momma Franklin's Famous Chili",
-                "steps": "1. Make momma Franklin's famous chili\n2. Enjoy!",
+                "steps": [],
+                "ingredients": [],
                 "author_id": session_user.id,
                 "author": {
                     "email": "test@example.com",
@@ -208,11 +229,29 @@ class CookbookMakerAPITest(DBTestCase):
         created_user = self.setUpSessionUser()
         recipe = models.Recipe(
             name=f"Test Recipe",
-            steps="Step 1: Done!",
             author_id=created_user.id,
             created_at=datetime.datetime.utcnow(),
         )
         self.db.add(recipe)
+        self.db.commit()
+        steps = [
+            models.RecipeStep(
+                position=idx, content=f"Add {idx + 1} flax eggs", recipe_id=recipe.id
+            )
+            for idx in range(0, 5)
+        ]
+        ingredients = [
+            models.RecipeIngredient(
+                position=idx,
+                quantity=idx + 1,
+                unit="tbsp",
+                item="ground flax seed",
+                recipe_id=recipe.id,
+            )
+            for idx in range(0, 5)
+        ]
+        self.db.bulk_save_objects(steps)
+        self.db.bulk_save_objects(ingredients)
         self.db.commit()
 
         # Log the user in
@@ -242,11 +281,30 @@ class CookbookMakerAPITest(DBTestCase):
 
         recipe = models.Recipe(
             name=f"Test Recipe",
-            steps="Step 1: Done!",
             author_id=first_user.id,
             created_at=datetime.datetime.utcnow(),
         )
         self.db.add(recipe)
+        self.db.commit()
+
+        steps = [
+            models.RecipeStep(
+                position=idx, content=f"Add {idx + 1} flax eggs", recipe_id=recipe.id
+            )
+            for idx in range(0, 5)
+        ]
+        ingredients = [
+            models.RecipeIngredient(
+                position=idx,
+                quantity=idx + 1,
+                unit="tbsp",
+                item="ground flax seed",
+                recipe_id=recipe.id,
+            )
+            for idx in range(0, 5)
+        ]
+        self.db.bulk_save_objects(steps)
+        self.db.bulk_save_objects(ingredients)
         self.db.commit()
 
         # Login as second user
