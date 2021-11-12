@@ -15,7 +15,7 @@
         >Create Recipe</n-button>
     </div>
     <div class="selected-recipe" v-if="!!selectedRecipe">
-        <view-recipe v-if="!!selectedRecipe" :recipe="selectedRecipe"></view-recipe>
+        <view-recipe :recipe="selectedRecipe"></view-recipe>
     </div>
 </template>
 
@@ -32,8 +32,8 @@ export default defineComponent({
     components: { RecipeCard, ViewRecipe, NButton, NSpace },
     data() {
         return {
-            recipes: {} as PaginatedRecipes,
-            selectedRecipe: {} as RecipeInDB,
+            recipes: undefined as PaginatedRecipes | undefined ,
+            selectedRecipe: undefined  as RecipeInDB | undefined,
         }
     },
     methods: {
@@ -60,6 +60,7 @@ export default defineComponent({
     },
     created() {
         this.loadAllRecipes();
+        console.log(this.selectedRecipe);
     }
 
 });

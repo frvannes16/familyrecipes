@@ -67,16 +67,5 @@ html {
 
 .split {
   width: 100%;
-  display: inline-block;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: stretch;
-}
-
-.ingredients {
-  flex-grow: 1;
-}
-
-.steps {
-  flex-grow: 2;
+  display: block;
 }
