@@ -6,25 +6,10 @@
 }
 
 html {
-  align-content: center;
-  align-items: center;
   background: #fff;
-  display: flex;
   font-family: Manrope, sans-serif;
   color: black;
   height: 100%;
-  justify-content: center;
-}
-
-body {
-  box-sizing: border-box;
-  color: #2a3239;
-  display: flex;
-  flex-wrap: wrap;
-  height: 8cm;
-  justify-content: space-between;
-  margin: 0;
-  width: 25cm;
 }
 
 @page {
@@ -76,34 +61,22 @@ body {
   }
 }
 
-@page chapter {
-  background: #fbc847;
-  margin: 0;
-  @top-left {
-    content: none;
-  }
-  @top-center {
-    content: none;
-  }
-  @top-right {
-    content: none;
-  }
-}
-
 .header {
   margin-bottom: 24px;
 }
 
 .split {
   width: 100%;
-  display: flex;
+  display: inline-block;
   flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
 }
 
-.split.ingredients {
-  flex-basis: 1;
+.ingredients {
+  flex-grow: 1;
 }
 
-.split.steps {
-  flex-basis: 4;
+.steps {
+  flex-grow: 2;
 }
