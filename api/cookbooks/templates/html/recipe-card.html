@@ -15,12 +15,30 @@
     <article id="recipes">
         {% for recipe in recipes %}
         <section class="recipe">
+            <div class="header">
             <h1>{{ recipe.name }}</h1>
             {%- if recipe.author.first_name and recipe.author.last_name -%}
             <h3>Written by {{ recipe.author.first_name }} {{ recipe.author.last_name }}</h3>
             {%- endif -%}
-            <h3>Steps</h3>
-            <p>{{ recipe.steps }}</p>
+            </div>
+            <div class="split">
+                <div class="ingredients">
+                    <h3>Ingredients</h3>
+                    <ul>
+                        {%- for ingredient in recipe.ingredients -%}
+                        <li>{{ ingredient.quantity }} {{ ingredient.unit }} {{ ingredient.item }}</li>
+                        {%- endfor -%}
+                    </ul>
+                </div>
+                <div class="steps">
+                    <h3>Steps</h3>
+                    <ol>
+                    {%- for step in recipe.steps -%}
+                        <li>{{ step.content }}</li>
+                    {%- endfor -%}
+                    </ol>
+                </div>
+            </div>   
         </section>
         {% endfor %}
     </article>

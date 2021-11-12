@@ -118,33 +118,33 @@ class RecipeIngredientBase(BaseModel):
     quantity: str
     unit: Optional[str]
     item: str
-    position: int
 
 
 class RecipeIngredientCreate(RecipeIngredientBase):
-    recipe_id: int
+    pass
 
 
 class RecipeIngredientInDB(RecipeIngredientBase):
     id: int
     recipe_id: int
+    position: int
 
     class Config:
         orm_mode = True
 
 
 class RecipeStepBase(BaseModel):
-    position: int
     content: str
 
 
 class RecipeStepCreate(RecipeStepBase):
-    recipe_id: int
+    pass
 
 
 class RecipeStepInDB(RecipeStepBase):
     id: int
     recipe_id: int
+    position: int
 
     class Config:
         orm_mode = True

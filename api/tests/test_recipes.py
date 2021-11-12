@@ -188,8 +188,205 @@ class GetRecipesTest(DBTestCase):
             recipe_count_after, recipe_count_before + 1
         )  # new recipe created.
 
+    def test_get_recipe_with_ingredients_and_steps(self):
+        user = self.create_and_login_user(email="test@example.com")
+
+        # SETUP
+
+        recipe = models.Recipe(
+            name="Chili", author_id=user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        # Add some ingredients and some steps
+        ingredients = [
+            models.RecipeIngredient(
+                position=0,
+                quantity="4",
+                unit="cloves",
+                item="garlic",
+                recipe_id=recipe.id,
+            ),
+            models.RecipeIngredient(
+                position=1,
+                quantity="14",
+                unit="oz",
+                item="canned diced tomatoes",
+                recipe_id=recipe.id,
+            ),
+        ]
+
+        steps = [
+            # out of order
+            models.RecipeStep(
+                position=1, content="Add the garlic cloves.", recipe_id=recipe.id
+            ),
+            models.RecipeStep(
+                position=0, content="Add the diced tomatoes.", recipe_id=recipe.id
+            ),
+        ]
+        self.db.bulk_save_objects(ingredients)
+        self.db.bulk_save_objects(steps)
+        self.db.commit()
+
+        # TEST
+        # Ensure that the ingredients and steps are returned in order by the API.
+
+        response = self.client.get(f"/recipes/{recipe.id}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIsNotNone(data)
+        expected_recipe_subset = {
+            "name": "Chili",
+            "steps": [
+                {
+                    "position": 0,
+                    "content": "Add the diced tomatoes.",
+                    "id": 2,
+                    "recipe_id": 1,
+                },
+                {
+                    "position": 1,
+                    "content": "Add the garlic cloves.",
+                    "id": 1,
+                    "recipe_id": 1,
+                },
+            ],
+            "ingredients": [
+                {
+                    "quantity": "4",
+                    "unit": "cloves",
+                    "item": "garlic",
+                    "position": 0,
+                    "id": 1,
+                    "recipe_id": 1,
+                },
+                {
+                    "quantity": "14",
+                    "unit": "oz",
+                    "item": "canned diced tomatoes",
+                    "position": 1,
+                    "id": 2,
+                    "recipe_id": 1,
+                },
+            ],
+        }
+        self.assertEqual(data, data | expected_recipe_subset)
+        expected_author_subset = {"email": "test@example.com"}
+        self.assertEqual(data["author"], data["author"] | expected_author_subset)
+
 
 class IngredientsTest(DBTestCase):
-    def test_put_ingredient_to_recipe(self):
+    def setUp(self):
+        super().setUp()
+        self.user = self.create_and_login_user()
 
-        self.create_and_login_user()
+    def test_put_ingredient_to_recipe(self):
+        # Create a recipe without ingredients
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        new_ingredient_data = {
+            "quantity": "14",
+            "unit": "oz",
+            "item": "canned fire-roasted tomatoes",
+        }
+
+        response = self.client.post(
+            f"/recipes/{recipe.id}/ingredients/", json=new_ingredient_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": 1,
+                    "position": 0,
+                    "quantity": "14",
+                    "unit": "oz",
+                    "item": "canned fire-roasted tomatoes",
+                    "recipe_id": recipe.id,
+                }
+            ],
+        )
+
+        # Add another ingredient. It should be appended.
+        new_ingredient_data = {"quantity": "1", "unit": "can", "item": "beans"}
+
+        response = self.client.post(
+            f"/recipes/{recipe.id}/ingredients/", json=new_ingredient_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": 1,
+                    "position": 0,
+                    "quantity": "14",
+                    "unit": "oz",
+                    "item": "canned fire-roasted tomatoes",
+                    "recipe_id": recipe.id,
+                },
+                {
+                    "id": 2,
+                    "position": 1,
+                    "quantity": "1",
+                    "unit": "can",
+                    "item": "beans",
+                    "recipe_id": recipe.id,
+                },
+            ],
+        )
+
+    def test_put_step_to_recipe(self):
+        # Create a recipe without steps
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        new_step_data = {"content": "Stir it all up!"}
+
+        response = self.client.post(f"/recipes/{recipe.id}/steps/", json=new_step_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": 1,
+                    "content": "Stir it all up!",
+                    "recipe_id": recipe.id,
+                    "position": 0,
+                }
+            ],
+        )
+
+        # Add another step. It should be appended.
+        new_step_data = {"content": "Stir it another time!"}
+
+        response = self.client.post(f"/recipes/{recipe.id}/steps/", json=new_step_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": 1,
+                    "content": "Stir it all up!",
+                    "recipe_id": recipe.id,
+                    "position": 0,
+                },
+                {
+                    "id": 2,
+                    "content": "Stir it another time!",
+                    "recipe_id": recipe.id,
+                    "position": 1,
+                },
+            ],
+        )

@@ -94,11 +94,39 @@ def get_recipes(
 
 
 def create_recipe(db: Session, author_id: int, recipe: schemas.RecipeCreate):
-    recipe = models.Recipe(
+    db_recipe = models.Recipe(
         name=recipe.name,
         author_id=author_id,
         created_at=datetime.utcnow(),
     )
-    db.add(recipe)
+    db.add(db_recipe)
     db.commit()
-    return recipe
+    return db_recipe
+
+
+def append_recipe_ingredient(
+    db: Session, recipe_id: int, ingredient: schemas.RecipeIngredientCreate
+):
+    ingredient_count = (
+        db.query(models.RecipeIngredient)
+        .filter(models.RecipeIngredient.recipe_id == recipe_id)
+        .count()
+    )
+    db_ingredient = models.RecipeIngredient(
+        **ingredient.dict(), recipe_id=recipe_id, position=ingredient_count
+    )
+    db.add(db_ingredient)
+    db.commit()
+    return db_ingredient
+
+
+def append_recipe_step(db: Session, recipe_id: int, step: schemas.RecipeStepCreate):
+    step_count = (
+        db.query(models.RecipeStep)
+        .filter(models.RecipeStep.recipe_id == recipe_id)
+        .count()
+    )
+    db_step = models.RecipeStep(**step.dict(), recipe_id=recipe_id, position=step_count)
+    db.add(db_step)
+    db.commit()
+    return db_step

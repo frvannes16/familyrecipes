@@ -23,10 +23,16 @@ class Recipe(Base):
 
     author = relationship("User", back_populates="recipes")
     steps = relationship(
-        "RecipeStep", back_populates="recipe", uselist=True
+        "RecipeStep",
+        back_populates="recipe",
+        uselist=True,
+        order_by="RecipeStep.position",
     )  # Many steps to one recipe.
     ingredients = relationship(
-        "RecipeIngredient", back_populates="recipe", uselist=True
+        "RecipeIngredient",
+        back_populates="recipe",
+        uselist=True,
+        order_by="RecipeIngredient.position",
     )
 
 

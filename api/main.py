@@ -114,6 +114,100 @@ async def get_user_recipes(
     return crud.get_recipes(db=db, recipe_params=params, author_id=author_id)
 
 
+@app.get("/recipes/{recipe_id}/", response_model=schemas.RecipeInDB)
+async def get_single_recipe(
+    recipe_id: int,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get recipe
+    recipe = crud.get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="recipe does not exist"
+        )
+
+    # assert user is author
+    if recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="recipe does not belong to user",
+        )
+
+    return schemas.RecipeInDB.from_orm(recipe)
+
+
+@app.post(
+    "/recipes/{recipe_id}/ingredients/",
+    response_model=List[schemas.RecipeIngredientInDB],
+)
+async def add_ingredient(
+    recipe_id: int,
+    new_ingredient: schemas.RecipeIngredientCreate,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get recipe
+    recipe = crud.get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="recipe does not exist"
+        )
+
+    # assert user owns recipe
+    if recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="recipe does not belong to user",
+        )
+
+    # Append the ingredient.
+    db_ingredient = crud.append_recipe_ingredient(db, recipe_id, new_ingredient)
+    if not db_ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unknown server error",
+        )
+    return [
+        schemas.RecipeIngredientInDB.from_orm(ingredient)
+        for ingredient in recipe.ingredients
+    ]
+
+
+@app.post(
+    "/recipes/{recipe_id}/steps/",
+    response_model=List[schemas.RecipeStepInDB],
+)
+async def add_step(
+    recipe_id: int,
+    new_step: schemas.RecipeStepCreate,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get recipe
+    recipe = crud.get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="recipe does not exist"
+        )
+
+    # assert user owns recipe
+    if recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="recipe does not belong to user",
+        )
+
+    # Append the step.
+    db_step = crud.append_recipe_step(db, recipe_id, new_step)
+    if not db_step:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unknown server error",
+        )
+    return [schemas.RecipeStepInDB.from_orm(step) for step in recipe.steps]
+
+
 app.include_router(auth.router)
 
 # Mount the html staticfile loader so that we don't override other endpoints.

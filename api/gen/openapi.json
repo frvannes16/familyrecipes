@@ -285,6 +285,108 @@
                 ]
             }
         },
+        "/recipes/{recipe_id}/": {
+            "get": {
+                "summary": "Get Single Recipe",
+                "operationId": "get_single_recipe_recipes__recipe_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Recipe Id",
+                            "type": "integer"
+                        },
+                        "name": "recipe_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecipeInDB"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
+        "/recipes/{recipe_id}/ingredients/": {
+            "post": {
+                "summary": "Add Ingredient",
+                "operationId": "add_ingredient_recipes__recipe_id__ingredients__post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Recipe Id",
+                            "type": "integer"
+                        },
+                        "name": "recipe_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecipeIngredientCreate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Add Ingredient Recipes  Recipe Id  Ingredients  Post",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecipeIngredientInDB"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
         "/auth/users/": {
             "post": {
                 "tags": [
@@ -515,17 +617,12 @@
             "RecipeCreate": {
                 "title": "RecipeCreate",
                 "required": [
-                    "name",
-                    "steps"
+                    "name"
                 ],
                 "type": "object",
                 "properties": {
                     "name": {
                         "title": "Name",
-                        "type": "string"
-                    },
-                    "steps": {
-                        "title": "Steps",
                         "type": "string"
                     }
                 }
@@ -534,20 +631,17 @@
                 "title": "RecipeInDB",
                 "required": [
                     "name",
-                    "steps",
                     "id",
                     "created_at",
                     "author_id",
-                    "author"
+                    "author",
+                    "steps",
+                    "ingredients"
                 ],
                 "type": "object",
                 "properties": {
                     "name": {
                         "title": "Name",
-                        "type": "string"
-                    },
-                    "steps": {
-                        "title": "Steps",
                         "type": "string"
                     },
                     "id": {
@@ -565,6 +659,107 @@
                     },
                     "author": {
                         "$ref": "#/components/schemas/User"
+                    },
+                    "steps": {
+                        "title": "Steps",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RecipeStepInDB"
+                        }
+                    },
+                    "ingredients": {
+                        "title": "Ingredients",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RecipeIngredientInDB"
+                        }
+                    }
+                }
+            },
+            "RecipeIngredientCreate": {
+                "title": "RecipeIngredientCreate",
+                "required": [
+                    "quantity",
+                    "item"
+                ],
+                "type": "object",
+                "properties": {
+                    "quantity": {
+                        "title": "Quantity",
+                        "type": "string"
+                    },
+                    "unit": {
+                        "title": "Unit",
+                        "type": "string"
+                    },
+                    "item": {
+                        "title": "Item",
+                        "type": "string"
+                    }
+                }
+            },
+            "RecipeIngredientInDB": {
+                "title": "RecipeIngredientInDB",
+                "required": [
+                    "quantity",
+                    "item",
+                    "id",
+                    "recipe_id",
+                    "position"
+                ],
+                "type": "object",
+                "properties": {
+                    "quantity": {
+                        "title": "Quantity",
+                        "type": "string"
+                    },
+                    "unit": {
+                        "title": "Unit",
+                        "type": "string"
+                    },
+                    "item": {
+                        "title": "Item",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "recipe_id": {
+                        "title": "Recipe Id",
+                        "type": "integer"
+                    },
+                    "position": {
+                        "title": "Position",
+                        "type": "integer"
+                    }
+                }
+            },
+            "RecipeStepInDB": {
+                "title": "RecipeStepInDB",
+                "required": [
+                    "position",
+                    "content",
+                    "id",
+                    "recipe_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "position": {
+                        "title": "Position",
+                        "type": "integer"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "recipe_id": {
+                        "title": "Recipe Id",
+                        "type": "integer"
                     }
                 }
             },

@@ -4,14 +4,20 @@
         <h3
             v-if="recipe.author?.first_name"
         >By {{ recipe.author?.first_name }} {{ recipe.author?.last_name }}</h3>
+        <h3>Ingredients:</h3>
+        <ol>
+        <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">{{ ingredientString(ingredient) }}</li>
+        </ol>
         <h3>Steps:</h3>
-        <p>{{ recipe.steps }}</p>
+        <ol>
+        <li v-for="step in recipe.steps">{{ step.content }}</li>
+        </ol>
         <n-button type="primary" size="large" @click="generateCookbookPdf" class="btn">Make Cookbook</n-button>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Configuration, RecipeInDB } from "../api";
+import { Configuration, RecipeInDB, RecipeIngredientInDB } from "../api";
 import { NButton } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
 
@@ -45,6 +51,13 @@ export default defineComponent({
                 // in case the blob uses a lot of memory
                 setTimeout(() => URL.revokeObjectURL(link.href), 2000);
             }).catch(console.error);
+        },
+        ingredientString(ingredient: RecipeIngredientInDB) {
+            if (ingredient.unit) {
+                return `${ingredient.quantity} ${ingredient.unit} ${ingredient.item}`
+            }
+            return `${ingredient.quantity} ${ingredient.item}`
+            
         }
     }
 });

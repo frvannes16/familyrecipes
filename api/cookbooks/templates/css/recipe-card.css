@@ -89,3 +89,21 @@ body {
     content: none;
   }
 }
+
+.header {
+  margin-bottom: 24px;
+}
+
+.split {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.split.ingredients {
+  flex-basis: 1;
+}
+
+.split.steps {
+  flex-basis: 4;
+}
