@@ -1,0 +1,29 @@
+@page {
+  margin: 0;
+  size: A4 portrait;
+  /* can use also 'landscape' for orientation */
+  margin: 100px 1cm 150px 1cm;
+}
+
+html {
+  align-content: center;
+  align-items: center;
+  background: #205294;
+  display: flex;
+  font-family: Manrope, sans-serif;
+  color: black;
+  height: 100%;
+  justify-content: center;
+}
+
+body {
+  background: rgb(129, 17, 17);
+  box-sizing: border-box;
+  color: #2a3239;
+  display: flex;
+  flex-wrap: wrap;
+  height: 8cm;
+  justify-content: space-between;
+  margin: 0;
+  width: 25cm;
+}

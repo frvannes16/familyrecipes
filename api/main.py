@@ -1,3 +1,5 @@
+import logging
+from logging import config as logging_config
 from typing import List
 
 from fastapi import FastAPI, Depends, status, Response
@@ -5,11 +7,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_404_NOT_FOUND
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 from api import schemas, crud, auth
 from api.database import get_db
+from api.cookbooks import generator as cookbook_generator
 
+# setup loggers
+logging_config.fileConfig("api/logging.conf", disable_existing_loggers=False)
+
+# setup app
 app = FastAPI()
 
 origins = ["*"]  # TODO: make production-ready.
@@ -64,6 +71,32 @@ async def create_user_recipe(
 ):
 
     return crud.create_recipe(db, author_id=user.id, recipe=recipe)
+
+
+@app.get("/recipes/{recipe_id}/generate-pdf/")
+async def generate_recipe_pdf(
+    recipe_id: int,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    recipe = crud.get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail=f"Could not find recipe with id {recipe_id}",
+        )
+    if recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail="You do not have access to this recipe.",
+        )
+    recipe_list = [schemas.RecipeInDB.from_orm(recipe)]
+    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(recipe_list)
+    response = Response(content=pdf_bytes, media_type="application/pdf")
+    response.headers.update(
+        {"Content-Disposition": "attachment", "filename": "my-recipe.pdf"}
+    )
+    return response
 
 
 @app.get("/users/{author_id}/recipes/", response_model=schemas.PaginatedRecipes)

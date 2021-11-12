@@ -179,6 +179,48 @@
                 ]
             }
         },
+        "/recipes/{recipe_id}/generate-pdf/": {
+            "get": {
+                "summary": "Generate Recipe Pdf",
+                "operationId": "generate_recipe_pdf_recipes__recipe_id__generate_pdf__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Recipe Id",
+                            "type": "integer"
+                        },
+                        "name": "recipe_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
         "/users/{author_id}/recipes/": {
             "get": {
                 "summary": "Get User Recipes",

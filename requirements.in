@@ -12,3 +12,5 @@ argon2-cffi
 python-jose[cryptography]
 typer
 requests
+weasyprint
+Jinja2
