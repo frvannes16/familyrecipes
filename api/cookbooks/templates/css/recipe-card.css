@@ -1,0 +1,91 @@
+@page {
+  margin: 0;
+  size: A4 portrait;
+  /* can use also 'landscape' for orientation */
+  margin: 100px 1cm 150px 1cm;
+}
+
+html {
+  align-content: center;
+  align-items: center;
+  background: #fff;
+  display: flex;
+  font-family: Manrope, sans-serif;
+  color: black;
+  height: 100%;
+  justify-content: center;
+}
+
+body {
+  box-sizing: border-box;
+  color: #2a3239;
+  display: flex;
+  flex-wrap: wrap;
+  height: 8cm;
+  justify-content: space-between;
+  margin: 0;
+  width: 25cm;
+}
+
+@page {
+  @top-left {
+    background: #fbc847;
+    content: counter(page);
+    height: 1cm;
+    text-align: center;
+    width: 1cm;
+  }
+  @top-center {
+    background: #fbc847;
+    content: "";
+    display: block;
+    height: 0.05cm;
+    opacity: 0.5;
+    width: 100%;
+  }
+  @top-right {
+    content: string(heading);
+    font-size: 9pt;
+    height: 1cm;
+    vertical-align: middle;
+    width: 100%;
+  }
+}
+@page :blank {
+  @top-left {
+    background: none;
+    content: "";
+  }
+  @top-center {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+}
+@page no-chapter {
+  @top-left {
+    background: none;
+    content: none;
+  }
+  @top-center {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+}
+
+@page chapter {
+  background: #fbc847;
+  margin: 0;
+  @top-left {
+    content: none;
+  }
+  @top-center {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+}

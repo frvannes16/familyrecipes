@@ -29,13 +29,15 @@ def generate_filename() -> str:
 
 def generate_pdf_from_recipes(
     recipes: List[RecipeInDB],
-    html_template_name: str = "html/test.html",
+    html_template_name: str = "html/recipe-card.html",
+    css_template_name: str = "css/recipe-card.css",
 ) -> bytes:
     """Generates a byte stream of a PDF file containing the given recipes
     formatted to the given template"""
 
     html_template = env.get_template(html_template_name)
-    css_template = env.get_template("css/test.css")
+    css_template = env.get_template(css_template_name)
+    # Put CSS in style tag of the HTML.
     css_content = css_template.render(template_dir=template_dir)
 
     html = html_template.render(

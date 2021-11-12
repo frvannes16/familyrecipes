@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Recipes Card</title>
+    <meta name="description" content="Recipe">
+    <style type="text/css" media="all">
+        {{ css_content }}
+    </style>
+</head>
+
+<body>
+
+    <article id="recipes">
+        {% for recipe in recipes %}
+        <section class="recipe">
+            <h1>{{ recipe.name }}</h1>
+            {%- if recipe.author.first_name and recipe.author.last_name -%}
+            <h3>Written by {{ recipe.author.first_name }} {{ recipe.author.last_name }}</h3>
+            {%- endif -%}
+            <h3>Steps</h3>
+            <p>{{ recipe.steps }}</p>
+        </section>
+        {% endfor %}
+    </article>
+
+</body>
+
+</html>
