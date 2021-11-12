@@ -7,8 +7,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from ..database import Base
-from ..main import app, get_db
+from api.database import Base
+from api.main import app, get_db
 
 logger = logging.getLogger(__name__)
 

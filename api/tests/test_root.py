@@ -1,4 +1,4 @@
-from .testcase import DBTestCase
+from api.testutils.testcase import DBTestCase
 
 
 class RootTestCase(DBTestCase):

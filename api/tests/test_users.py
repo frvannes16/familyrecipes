@@ -3,7 +3,7 @@ import time
 from jose import jwt
 from fastapi import status
 
-from .testcase import DBTestCase
+from api.testutils.testcase import DBTestCase
 from api.models import OAuth2Token, User
 from api.settings import settings
 from api.auth import JWT_ALGORITHM
