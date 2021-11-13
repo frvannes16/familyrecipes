@@ -5,9 +5,9 @@
             v-if="recipe.author?.first_name"
         >By {{ recipe.author?.first_name }} {{ recipe.author?.last_name }}</h3>
         <h3>Ingredients:</h3>
-        <ol>
+        <ul>
         <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">{{ ingredientString(ingredient) }}</li>
-        </ol>
+        </ul>
         <h3>Steps:</h3>
         <ol>
         <li v-for="step in recipe.steps">{{ step.content }}</li>

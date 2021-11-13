@@ -130,16 +130,35 @@ class CookbookMakerAPITest(DBTestCase):
             response.status_code, status.HTTP_403_FORBIDDEN, response.json()
         )
 
-    async def test_generate_cookbook_byte_return_value(self):
+    def test_generate_cookbook_byte_return_value(self):
         # SETUP: Generate a user and recipe.
         created_user = self.create_and_login_user()
         recipe = models.Recipe(
             name=f"Test Recipe",
-            steps="Step 1: Done!",
             author_id=created_user.id,
             created_at=datetime.datetime.utcnow(),
         )
         self.db.add(recipe)
+        self.db.commit()
+
+        steps = [
+            models.RecipeStep(
+                position=idx, content=f"Add {idx + 1} flax eggs", recipe_id=recipe.id
+            )
+            for idx in range(0, 5)
+        ]
+        ingredients = [
+            models.RecipeIngredient(
+                position=idx,
+                quantity=idx + 1,
+                unit="tbsp",
+                item="ground flax seed",
+                recipe_id=recipe.id,
+            )
+            for idx in range(0, 5)
+        ]
+        self.db.bulk_save_objects(steps)
+        self.db.bulk_save_objects(ingredients)
         self.db.commit()
 
         recipes = list((RecipeInDB.from_orm(recipe),))

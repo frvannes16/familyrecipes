@@ -50,11 +50,13 @@ export default defineComponent({
             this.$router.push(to);
         },
         showRecipe(recipeId: Number) {
-            const selectedRecipe = this.recipes.data.find(recipe => recipe.id == recipeId);
-            if (!!selectedRecipe) {
-                this.selectedRecipe = selectedRecipe;
-            } else {
-                console.error("Unknown recipe selected with ID " + String(recipeId));
+            if (this.recipes) {
+                const selectedRecipe = this.recipes.data.find(recipe => recipe.id == recipeId);
+                if (!!selectedRecipe) {
+                    this.selectedRecipe = selectedRecipe;
+                } else {
+                    console.error("Unknown recipe selected with ID " + String(recipeId));
+                }
             }
         }
     },
