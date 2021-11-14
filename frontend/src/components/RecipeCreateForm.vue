@@ -4,21 +4,28 @@
             <n-input v-model="form.name" placeholder="Recipe Name"></n-input>
         </n-form-item>
         <h3>Ingredients</h3>
-        <n-form-item v-for="(ingredient, idx) in form.ingredients" :label="`Ingredient ${idx+1}`" path="ingredient.content">
+        <n-form-item
+            v-for="(ingredient, idx) in form.ingredients"
+            :label="`Ingredient ${idx + 1}`"
+            path="ingredient.content"
+        >
             <n-input v-model="ingredient.content" placeholder="1 3/4 tsp cayenne powder"></n-input>
         </n-form-item>
         <n-button @click="addIngredient">+</n-button>
         <h3>Steps</h3>
-        <n-form-item v-for="(step, idx) in form.steps" :label="`Step ${idx+1}`" path="step.content">
+        <n-form-item
+            v-for="(step, idx) in form.steps"
+            :label="`Step ${idx + 1}`"
+            path="step.content"
+        >
             <n-input v-model="step.content" placeholder="Details"></n-input>
         </n-form-item>
         <n-button @click="addStep">+</n-button>
-        
     </n-form>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import {NForm, NFormItem, NInput, NButton} from "naive-ui";
+import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 
 interface Step {
     content: String
@@ -31,7 +38,7 @@ interface Ingredient {
 
 export default defineComponent({
     name: "RecipeCreateForm",
-    components: {NForm, NFormItem, NInput, NButton},
+    components: { NForm, NFormItem, NInput, NButton },
     data() {
         return {
             form: {
@@ -43,13 +50,11 @@ export default defineComponent({
     },
     methods: {
         addStep() {
-            this.form.steps.push({content: ""});
+            this.form.steps.push({ content: "" });
         },
         addIngredient() {
             this.form.ingredients.push({
-                quantity: "1",
-                unit: "",
-                item: ""
+                content: ""
             })
         }
     }

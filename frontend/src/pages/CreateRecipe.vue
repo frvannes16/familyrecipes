@@ -10,7 +10,7 @@ import { defineComponent } from "vue";
 import RecipeCreateForm from "../components/RecipeCreateForm.vue";
 export default defineComponent({
     name: "CreateRecipe",
-    components: {RecipeCreateForm},
+    components: { RecipeCreateForm },
 })
 </script>
 

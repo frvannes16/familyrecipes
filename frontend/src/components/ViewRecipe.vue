@@ -6,11 +6,14 @@
         >By {{ recipe.author?.first_name }} {{ recipe.author?.last_name }}</h3>
         <h3>Ingredients:</h3>
         <ul>
-        <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">{{ ingredient.content }}</li>
+            <li
+                v-for="ingredient in recipe.ingredients"
+                :key="ingredient.id"
+            >{{ ingredient.content }}</li>
         </ul>
         <h3>Steps:</h3>
         <ol>
-        <li v-for="step in recipe.steps">{{ step.content }}</li>
+            <li v-for="step in recipe.steps">{{ step.content }}</li>
         </ol>
         <n-button type="primary" size="large" @click="generateCookbookPdf" class="btn">Make Cookbook</n-button>
     </div>
@@ -35,14 +38,14 @@ export default defineComponent({
         generateCookbookPdf() {
             /** Generates a PDF file and forces the browser to download the file. */
             console.log(`Generating cookbook for recipe "${this.recipe.name}"`);
-            const api = DefaultApiFactory(new Configuration({baseOptions: {responseType: 'blob'}}), axiosConfigFactory().basePath);
+            const api = DefaultApiFactory(new Configuration({ baseOptions: { responseType: 'blob' } }), axiosConfigFactory().basePath);
 
             api.generateRecipePdfRecipesRecipeIdGeneratePdfGet(this.recipe.id).then(response => {
                 // Force browser to download PDF.
                 // From https://stackoverflow.com/questions/41938718/how-to-download-files-using-axios
                 // See https://gist.github.com/javilobo8/097c30a233786be52070986d8cdb1743 to understand these quirks.
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+                link.href = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
                 link.download = 'recipe.pdf';
                 document.body.appendChild(link);
                 link.click();

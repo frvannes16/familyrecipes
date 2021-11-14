@@ -32,8 +32,8 @@ export default defineComponent({
     components: { RecipeCard, ViewRecipe, NButton, NSpace },
     data() {
         return {
-            recipes: undefined as PaginatedRecipes | undefined ,
-            selectedRecipe: undefined  as RecipeInDB | undefined,
+            recipes: undefined as PaginatedRecipes | undefined,
+            selectedRecipe: undefined as RecipeInDB | undefined,
         }
     },
     methods: {
