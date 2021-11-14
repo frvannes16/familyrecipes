@@ -215,19 +215,7 @@ export interface RecipeIngredientCreate {
      * @type {string}
      * @memberof RecipeIngredientCreate
      */
-    quantity: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecipeIngredientCreate
-     */
-    unit?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecipeIngredientCreate
-     */
-    item: string;
+    content: string;
 }
 /**
  * 
@@ -240,19 +228,7 @@ export interface RecipeIngredientInDB {
      * @type {string}
      * @memberof RecipeIngredientInDB
      */
-    quantity: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecipeIngredientInDB
-     */
-    unit?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RecipeIngredientInDB
-     */
-    item: string;
+    content: string;
     /**
      * 
      * @type {number}
@@ -275,15 +251,22 @@ export interface RecipeIngredientInDB {
 /**
  * 
  * @export
+ * @interface RecipeStepCreate
+ */
+export interface RecipeStepCreate {
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeStepCreate
+     */
+    content: string;
+}
+/**
+ * 
+ * @export
  * @interface RecipeStepInDB
  */
 export interface RecipeStepInDB {
-    /**
-     * 
-     * @type {number}
-     * @memberof RecipeStepInDB
-     */
-    position: number;
     /**
      * 
      * @type {string}
@@ -302,6 +285,12 @@ export interface RecipeStepInDB {
      * @memberof RecipeStepInDB
      */
     recipe_id: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof RecipeStepInDB
+     */
+    position: number;
 }
 /**
  * 
@@ -697,6 +686,50 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Add Step
+         * @param {number} recipeId 
+         * @param {RecipeStepCreate} recipeStepCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addStepRecipesRecipeIdStepsPost: async (recipeId: number, recipeStepCreate: RecipeStepCreate, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'recipeId' is not null or undefined
+            assertParamExists('addStepRecipesRecipeIdStepsPost', 'recipeId', recipeId)
+            // verify required parameter 'recipeStepCreate' is not null or undefined
+            assertParamExists('addStepRecipesRecipeIdStepsPost', 'recipeStepCreate', recipeStepCreate)
+            const localVarPath = `/recipes/{recipe_id}/steps/`
+                .replace(`{${"recipe_id"}}`, encodeURIComponent(String(recipeId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(recipeStepCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Create User Recipe
          * @param {RecipeCreate} recipeCreate 
          * @param {*} [options] Override http request option.
@@ -1025,6 +1058,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Add Step
+         * @param {number} recipeId 
+         * @param {RecipeStepCreate} recipeStepCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addStepRecipesRecipeIdStepsPost(recipeId: number, recipeStepCreate: RecipeStepCreate, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RecipeStepInDB>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addStepRecipesRecipeIdStepsPost(recipeId, recipeStepCreate, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Create User Recipe
          * @param {RecipeCreate} recipeCreate 
          * @param {*} [options] Override http request option.
@@ -1135,6 +1180,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Add Step
+         * @param {number} recipeId 
+         * @param {RecipeStepCreate} recipeStepCreate 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addStepRecipesRecipeIdStepsPost(recipeId: number, recipeStepCreate: RecipeStepCreate, options?: any): AxiosPromise<Array<RecipeStepInDB>> {
+            return localVarFp.addStepRecipesRecipeIdStepsPost(recipeId, recipeStepCreate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Create User Recipe
          * @param {RecipeCreate} recipeCreate 
          * @param {*} [options] Override http request option.
@@ -1235,6 +1291,19 @@ export class DefaultApi extends BaseAPI {
      */
     public addIngredientRecipesRecipeIdIngredientsPost(recipeId: number, recipeIngredientCreate: RecipeIngredientCreate, options?: any) {
         return DefaultApiFp(this.configuration).addIngredientRecipesRecipeIdIngredientsPost(recipeId, recipeIngredientCreate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Add Step
+     * @param {number} recipeId 
+     * @param {RecipeStepCreate} recipeStepCreate 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public addStepRecipesRecipeIdStepsPost(recipeId: number, recipeStepCreate: RecipeStepCreate, options?: any) {
+        return DefaultApiFp(this.configuration).addStepRecipesRecipeIdStepsPost(recipeId, recipeStepCreate, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -3,7 +3,6 @@ import enum
 
 from sqlalchemy import String, Column, Integer, TIMESTAMP, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 
 from api.database import Base
 
@@ -57,15 +56,7 @@ class RecipeIngredient(Base):
     __tablename__ = "ingredients"
 
     id = Column(Integer, primary_key=True, index=True)
-    quantity = Column(
-        String, nullable=False
-    )  # An integer or fraction: 1, 2, 3, 1/2, 1 3/4
-    unit = Column(
-        String, nullable=True
-    )  # An optional unit: tsp, tbsp, cup, g, kg, ml, oz
-    item = Column(
-        String, nullable=False
-    )  # The ingredient name: vegetable broth, red onion diced.
+    content = Column(String, nullable=False)  # 1 cup ground flax seed.
     recipe_id = Column(Integer, ForeignKey("recipes.id"), index=True, nullable=False)
     position = Column(
         Integer, nullable=False

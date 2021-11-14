@@ -46,9 +46,7 @@ class CookbookMakerAPITest(DBTestCase):
         ingredients = [
             models.RecipeIngredient(
                 position=idx,
-                quantity=idx + 1,
-                unit="tbsp",
-                item="ground flax seed",
+                content=f"{idx + 1} tbsp ground flax seed",
                 recipe_id=recipe.id,
             )
             for idx in range(0, 5)
@@ -99,9 +97,7 @@ class CookbookMakerAPITest(DBTestCase):
         ingredients = [
             models.RecipeIngredient(
                 position=idx,
-                quantity=idx + 1,
-                unit="tbsp",
-                item="ground flax seed",
+                content=f"{idx + 1} tbsp ground flax seed",
                 recipe_id=recipe.id,
             )
             for idx in range(0, 5)
@@ -150,9 +146,7 @@ class CookbookMakerAPITest(DBTestCase):
         ingredients = [
             models.RecipeIngredient(
                 position=idx,
-                quantity=idx + 1,
-                unit="tbsp",
-                item="ground flax seed",
+                content=f"{idx + 1} tbsp ground flax seed",
                 recipe_id=recipe.id,
             )
             for idx in range(0, 5)

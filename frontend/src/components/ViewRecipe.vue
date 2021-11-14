@@ -6,7 +6,7 @@
         >By {{ recipe.author?.first_name }} {{ recipe.author?.last_name }}</h3>
         <h3>Ingredients:</h3>
         <ul>
-        <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">{{ ingredientString(ingredient) }}</li>
+        <li v-for="ingredient in recipe.ingredients" :key="ingredient.id">{{ ingredient.content }}</li>
         </ul>
         <h3>Steps:</h3>
         <ol>
@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Configuration, RecipeInDB, RecipeIngredientInDB } from "../api";
+import { Configuration, RecipeInDB } from "../api";
 import { NButton } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
 
@@ -51,13 +51,6 @@ export default defineComponent({
                 // in case the blob uses a lot of memory
                 setTimeout(() => URL.revokeObjectURL(link.href), 2000);
             }).catch(console.error);
-        },
-        ingredientString(ingredient: RecipeIngredientInDB) {
-            if (ingredient.unit) {
-                return `${ingredient.quantity} ${ingredient.unit} ${ingredient.item}`
-            }
-            return `${ingredient.quantity} ${ingredient.item}`
-            
         }
     }
 });

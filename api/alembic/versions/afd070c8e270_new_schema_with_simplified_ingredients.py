@@ -1,8 +1,8 @@
-"""schema
+"""New schema with simplified ingredients
 
-Revision ID: 8da4c24475b1
+Revision ID: afd070c8e270
 Revises: 
-Create Date: 2021-11-12 14:50:53.091986
+Create Date: 2021-11-14 14:28:21.145369
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8da4c24475b1'
+revision = 'afd070c8e270'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -53,9 +53,7 @@ def upgrade():
     op.create_index(op.f('ix_recipes_id'), 'recipes', ['id'], unique=False)
     op.create_table('ingredients',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('quantity', sa.String(), nullable=False),
-    sa.Column('unit', sa.String(), nullable=True),
-    sa.Column('item', sa.String(), nullable=False),
+    sa.Column('content', sa.String(), nullable=False),
     sa.Column('recipe_id', sa.Integer(), nullable=False),
     sa.Column('position', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['recipe_id'], ['recipes.id'], ),

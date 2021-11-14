@@ -5,9 +5,7 @@
         </n-form-item>
         <h3>Ingredients</h3>
         <n-form-item v-for="(ingredient, idx) in form.ingredients" :label="`Ingredient ${idx+1}`" path="ingredient.content">
-            <n-input v-model="ingredient.quantity" placeholder="1, 1/2, 12"></n-input>
-            <n-input v-model="ingredient.unit" placeholder="cup/tsp/tbsp/kg"></n-input>
-            <n-input v-model="ingredient.item" placeholder="Tomatoes..."></n-input>
+            <n-input v-model="ingredient.content" placeholder="1 3/4 tsp cayenne powder"></n-input>
         </n-form-item>
         <n-button @click="addIngredient">+</n-button>
         <h3>Steps</h3>
@@ -27,9 +25,7 @@ interface Step {
 };
 
 interface Ingredient {
-    quantity: String,
-    unit: String,
-    item: String
+    content: String
 
 }
 

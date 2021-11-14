@@ -30,9 +30,7 @@ class GetRecipesTest(DBTestCase):
             ingredients = [
                 models.RecipeIngredient(
                     position=idx,
-                    quantity=idx + 1,
-                    unit="tbsp",
-                    item="ground flax seed",
+                    content=f"{idx + 1} tbsp ground flax seed",
                     recipe_id=recipe.id,
                 )
                 for idx in range(0, 5)
@@ -203,16 +201,12 @@ class GetRecipesTest(DBTestCase):
         ingredients = [
             models.RecipeIngredient(
                 position=0,
-                quantity="4",
-                unit="cloves",
-                item="garlic",
+                content="4 cloves garlic",
                 recipe_id=recipe.id,
             ),
             models.RecipeIngredient(
                 position=1,
-                quantity="14",
-                unit="oz",
-                item="canned diced tomatoes",
+                content="14 oz canned diced tomatoes",
                 recipe_id=recipe.id,
             ),
         ]
@@ -255,17 +249,13 @@ class GetRecipesTest(DBTestCase):
             ],
             "ingredients": [
                 {
-                    "quantity": "4",
-                    "unit": "cloves",
-                    "item": "garlic",
+                    "content": "4 cloves garlic",
                     "position": 0,
                     "id": 1,
                     "recipe_id": 1,
                 },
                 {
-                    "quantity": "14",
-                    "unit": "oz",
-                    "item": "canned diced tomatoes",
+                    "content": "14 oz canned diced tomatoes",
                     "position": 1,
                     "id": 2,
                     "recipe_id": 1,
@@ -291,9 +281,7 @@ class IngredientsTest(DBTestCase):
         self.db.commit()
 
         new_ingredient_data = {
-            "quantity": "14",
-            "unit": "oz",
-            "item": "canned fire-roasted tomatoes",
+            "content": "14 oz canned fire-roasted tomatoes",
         }
 
         response = self.client.post(
@@ -306,16 +294,16 @@ class IngredientsTest(DBTestCase):
                 {
                     "id": 1,
                     "position": 0,
-                    "quantity": "14",
-                    "unit": "oz",
-                    "item": "canned fire-roasted tomatoes",
+                    "content": "14 oz canned fire-roasted tomatoes",
                     "recipe_id": recipe.id,
                 }
             ],
         )
 
         # Add another ingredient. It should be appended.
-        new_ingredient_data = {"quantity": "1", "unit": "can", "item": "beans"}
+        new_ingredient_data = {
+            "content": "1 can black beans",
+        }
 
         response = self.client.post(
             f"/recipes/{recipe.id}/ingredients/", json=new_ingredient_data
@@ -327,17 +315,13 @@ class IngredientsTest(DBTestCase):
                 {
                     "id": 1,
                     "position": 0,
-                    "quantity": "14",
-                    "unit": "oz",
-                    "item": "canned fire-roasted tomatoes",
+                    "content": "14 oz canned fire-roasted tomatoes",
                     "recipe_id": recipe.id,
                 },
                 {
                     "id": 2,
                     "position": 1,
-                    "quantity": "1",
-                    "unit": "can",
-                    "item": "beans",
+                    "content": "1 can black beans",
                     "recipe_id": recipe.id,
                 },
             ],

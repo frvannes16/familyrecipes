@@ -115,9 +115,7 @@ class AuthenticationResponse(BaseModel):
 
 
 class RecipeIngredientBase(BaseModel):
-    quantity: str
-    unit: Optional[str]
-    item: str
+    content: str
 
 
 class RecipeIngredientCreate(RecipeIngredientBase):
