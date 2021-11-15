@@ -133,6 +133,11 @@
   dependencies:
     "@types/yargs-parser" "*"
 
+"@vicons/fa@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@vicons/fa/-/fa-0.11.0.tgz#dc6780b25b7943734e7c75d74df2f4443b0572ae"
+  integrity sha512-Mlv4sxlghqAPu+RM+6w0/GIcsQFK/fx1syw1HkABS6MJRLwHOqbmImCYZQam7OMAYhZBs82YpY5cp2NFSgwkOA==
+
 "@vitejs/plugin-vue@^1.9.2":
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-1.9.2.tgz#7234efb8c3c3d60c7eac350a935074ab1820ae0e"
