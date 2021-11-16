@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <progress-bar class="progress-bar"></progress-bar>
         <h1>My Recipes</h1>
         <n-space>
             <recipe-card
@@ -20,6 +21,7 @@
 import { defineComponent } from "vue";
 import RecipeCard from "../components/RecipeCard.vue";
 import ViewRecipe from "../components/ViewRecipe.vue";
+import ProgressBar from "../components/ProgressBar.vue";
 import { NButton, NSpace, useMessage } from "naive-ui";
 import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
 import { RouteLocationRaw } from "vue-router";
@@ -28,7 +30,7 @@ import { RouteLocationRaw } from "vue-router";
 
 export default defineComponent({
     name: "MyRecipes",
-    components: { RecipeCard, ViewRecipe, NButton, NSpace },
+    components: { RecipeCard, ViewRecipe, NButton, NSpace, ProgressBar },
     data() {
         return {
             recipes: undefined as PaginatedRecipes | undefined,
@@ -87,6 +89,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.progress-bar {
+    margin: 12px auto;
+    text-align: center;
+}
 .container {
     width: 80%;
     margin: 0 auto;
