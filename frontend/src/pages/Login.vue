@@ -13,6 +13,7 @@
                                 type="password"
                                 show-password-on="mousedown"
                                 placeholder="Password"
+                                @change="onSignIn"
                             />
                         </n-form-item-row>
                     </n-form>
@@ -39,6 +40,7 @@
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
                                 placeholder="Confirm password"
+                                @change="onSignUp"
                             />
                         </n-form-item-row>
                     </n-form>
@@ -118,7 +120,7 @@ export default defineComponent({
 </script>
 
 
-<style>
+<style scoped>
 .container {
     max-width: 500px;
     margin: 24px auto;
