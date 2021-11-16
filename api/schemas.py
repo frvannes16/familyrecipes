@@ -160,6 +160,10 @@ class RecipeCreate(RecipeBase):
     pass
 
 
+class RecipeEdit(RecipeBase):
+    pass
+
+
 class RecipeInDB(RecipeBase):
     id: int
     created_at: datetime.datetime

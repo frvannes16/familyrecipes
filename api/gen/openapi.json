@@ -179,6 +179,102 @@
                 ]
             }
         },
+        "/recipes/{recipe_id}/": {
+            "get": {
+                "summary": "Get Single Recipe",
+                "operationId": "get_single_recipe_recipes__recipe_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Recipe Id",
+                            "type": "integer"
+                        },
+                        "name": "recipe_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecipeInDB"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            },
+            "post": {
+                "summary": "Update Recipe",
+                "operationId": "update_recipe_recipes__recipe_id___post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Recipe Id",
+                            "type": "integer"
+                        },
+                        "name": "recipe_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecipeEdit"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecipeInDB"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
         "/recipes/{recipe_id}/generate-pdf/": {
             "get": {
                 "summary": "Generate Recipe Pdf",
@@ -263,50 +359,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/PaginatedRecipes"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "OAuth2PasswordBearerWithCookie": []
-                    }
-                ]
-            }
-        },
-        "/recipes/{recipe_id}/": {
-            "get": {
-                "summary": "Get Single Recipe",
-                "operationId": "get_single_recipe_recipes__recipe_id___get",
-                "parameters": [
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Recipe Id",
-                            "type": "integer"
-                        },
-                        "name": "recipe_id",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RecipeInDB"
                                 }
                             }
                         }
@@ -732,6 +784,19 @@
             },
             "RecipeCreate": {
                 "title": "RecipeCreate",
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                }
+            },
+            "RecipeEdit": {
+                "title": "RecipeEdit",
                 "required": [
                     "name"
                 ],

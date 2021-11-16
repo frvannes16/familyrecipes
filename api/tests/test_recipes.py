@@ -266,6 +266,34 @@ class GetRecipesTest(DBTestCase):
         expected_author_subset = {"email": "test@example.com"}
         self.assertEqual(data["author"], data["author"] | expected_author_subset)
 
+    def test_update_recipe_name(self):
+        user = self.create_and_login_user(email="test@example.com")
+
+        # SETUP
+
+        recipe = models.Recipe(
+            name="Recipe Name Before Change",
+            author_id=user.id,
+            created_at=datetime.datetime.utcnow(),
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        # TEST
+
+        name_change_data = {"name": "Recipe Name AFTER Change"}
+
+        response = self.client.post(f"/recipes/{recipe.id}/", json=name_change_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        expected_subset = {
+            "id": recipe.id,
+            "name": "Recipe Name AFTER Change",
+            "steps": [],
+            "ingredients": [],
+        }
+        self.assertEqual(response.json(), response.json() | expected_subset)
+
 
 class IngredientsTest(DBTestCase):
     def setUp(self):

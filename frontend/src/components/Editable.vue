@@ -79,5 +79,11 @@ export default defineComponent({
 
 .button {
     flex-basis: 1;
+    opacity: 0.3;
+    transition: opacity 0.4s;
+}
+
+.editable-wrapper:hover .button {
+    opacity: 1;
 }
 </style>

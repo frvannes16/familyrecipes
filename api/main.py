@@ -77,6 +77,29 @@ async def create_user_recipe(
     return crud.create_recipe(db, author_id=user.id, recipe=recipe)
 
 
+@app.post("/recipes/{recipe_id}/", response_model=schemas.RecipeInDB)
+async def update_recipe(
+    recipe_id: int,
+    edit: schemas.RecipeEdit,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    recipe = crud.get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail=f"Could not find recipe with id {recipe_id}",
+        )
+    if recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN,
+            detail="You do not have access to this recipe.",
+        )
+
+    recipe = crud.update_recipe(db, recipe, edit)
+    return schemas.RecipeInDB.from_orm(recipe)
+
+
 @app.get("/recipes/{recipe_id}/generate-pdf/")
 async def generate_recipe_pdf(
     recipe_id: int,

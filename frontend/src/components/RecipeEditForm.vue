@@ -1,6 +1,6 @@
 <template>
     <n-form size="large">
-        <editable justify-content="flex-start">
+        <editable justify-content="flex-start" @edit-complete="updateRecipeName">
             <template v-slot:default="props">
                 <h2 class="recipe-name" @click="() => props.toggleEditState(true)">{{ form.name }}</h2>
             </template>
@@ -107,6 +107,14 @@ export default defineComponent({
         })
     },
     methods: {
+        updateRecipeName() {
+            const name = this.form.name;
+            API.updateRecipeRecipesRecipeIdPost(this.recipeId, { name }).then(response => {
+                if (response.status == 200 && response.data?.name) {
+                    this.form.name = response.data.name;
+                }
+            }).catch(console.error);
+        },
         addStep() {
             this.form.steps.push({ content: "What next?" });
         },
