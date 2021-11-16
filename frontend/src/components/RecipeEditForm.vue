@@ -40,18 +40,24 @@
             </div>
             <div class="steps-wrapper">
                 <h3>Steps</h3>
-                <n-form-item
-                    v-for="(step, idx) in form.steps"
-                    :label="`Step ${idx + 1} `"
-                    path="step.content"
-                >
-                    <n-input
-                        @input="value => updateStoredValue('STEP', idx, value)"
-                        :default-value="step.content"
-                        type="textarea"
-                        placeholder="Details"
-                    ></n-input>
-                </n-form-item>
+                <div v-for="(step, idx) in form.steps">
+                    <p>
+                        <strong>Step {{ idx + 1 }}</strong>
+                    </p>
+                    <editable @edit-complete="() => editStep(step)">
+                        <template v-slot:edit-state="props">
+                            <n-input
+                                @input="value => updateStoredValue('STEP', idx, value)"
+                                :default-value="step.content"
+                                type="textarea"
+                                placeholder="Details"
+                            ></n-input>
+                        </template>
+                        <template v-slot:default="props">
+                            <p @click="() => props.toggleEditState(true)">{{ step.content }}</p>
+                        </template>
+                    </editable>
+                </div>
                 <n-button @click="addStep">+ Add Step</n-button>
             </div>
         </div>
@@ -116,7 +122,18 @@ export default defineComponent({
             }).catch(console.error);
         },
         addStep() {
-            this.form.steps.push({ content: "What next?" });
+            const content = "What next?";
+            // update client data first for fast change.
+            this.form.steps.push({ content });
+            // update step via API
+            API.addStepRecipesRecipeIdStepsPost(this.recipeId, { content }).then(
+                response => {
+                    if (response.status == 200 && response.data) {
+                        // update client steps with API response.
+                        this.form.steps = response.data;
+                    }
+                }
+            )
         },
         addIngredient() {
             const content = "New Ingredient";
@@ -143,6 +160,21 @@ export default defineComponent({
                         }
                     }
                     ).catch(console.error);
+            } else {
+                console.error("trying to edit ingredient without ID.");
+            }
+        },
+        editStep(step: Step) {
+            if (step.id) {
+                API.updateStepRecipesStepsStepIdPost(
+                    step.id, { content: step.content }).then(response => {
+                        if (response.status == 200 && response.data) {
+                            this.form.steps = response.data;  // update client step model with API results.
+                        }
+                    }
+                    ).catch(console.error);
+            } else {
+                console.error("trying to edit step without ID.");
             }
         },
         updateStoredValue(valueType: STORED_VAL_TYPE, index: number, value: string) {

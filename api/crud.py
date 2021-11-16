@@ -138,6 +138,16 @@ def append_recipe_ingredient(
     return db_ingredient
 
 
+def get_step(db: Session, step_id: int):
+    return db.query(models.RecipeStep).get(step_id)
+
+
+def update_step(db: Session, step: models.RecipeStep, edit: schemas.RecipeStepEdit):
+    setattr(step, "content", edit.content)
+    db.commit()
+    return step
+
+
 def append_recipe_step(db: Session, recipe_id: int, step: schemas.RecipeStepCreate):
     step_count = (
         db.query(models.RecipeStep)

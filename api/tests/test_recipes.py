@@ -493,3 +493,74 @@ class StepsTest(DBTestCase):
                 },
             ],
         )
+
+    def test_update_recipe_step(self):
+        # Create a recipe with a step
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        step = models.RecipeStep(
+            content="Add cayenne pepper. Stir.", recipe_id=recipe.id, position=0
+        )
+        self.db.add(step)
+        self.db.commit()
+
+        # try to update the recipe step.
+        edit_step_data = {"content": "Add cayenne pepper. Shake, don't stir."}
+        response = self.client.post(f"/recipes/steps/{step.id}/", json=edit_step_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": step.id,
+                    "content": "Add cayenne pepper. Shake, don't stir.",
+                    "position": 0,
+                    "recipe_id": recipe.id,
+                }
+            ],
+        )
+
+    def test_update_recipe_step_does_not_exist(self):
+        # Create a recipe without a step
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        # try to update the recipe step.
+        edit_step_data = {"content": "Add cayenne pepper. Shake, don't stir."}
+        response = self.client.post(f"/recipes/steps/100/", json=edit_step_data)
+
+        self.assertEqual(
+            response.status_code, status.HTTP_404_NOT_FOUND, response.json()
+        )
+
+    def test_update_step_no_recipe_access(self):
+        # Create a recipe with a step
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        step = models.RecipeStep(
+            content="Add cayenne pepper. Stir.", recipe_id=recipe.id, position=0
+        )
+        self.db.add(step)
+        self.db.commit()
+
+        # Try to update the recipe step without access.
+        # Log into a different user.
+        self.create_and_login_user(email="test-other@example.com")
+        edit_step_data = {"content": "Add cayenne pepper. Shake, don't stir."}
+        response = self.client.post(f"/recipes/steps/{step.id}/", json=edit_step_data)
+
+        self.assertEqual(
+            response.status_code, status.HTTP_403_FORBIDDEN, response.json()
+        )

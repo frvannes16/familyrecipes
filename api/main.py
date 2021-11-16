@@ -233,6 +233,31 @@ async def add_ingredient(
     ]
 
 
+@app.post("/recipes/steps/{step_id}/", response_model=List[schemas.RecipeStepInDB])
+async def update_step(
+    step_id: int,
+    edit_step: schemas.RecipeStepEdit,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get step or 404
+    step = crud.get_step(db, step_id)
+    if not step:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="step does not exist"
+        )
+
+    if step.recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="step does not belong to user",
+        )
+
+    # Edit the step
+    crud.update_step(db, step, edit_step)
+    return [schemas.RecipeStepInDB.from_orm(step) for step in step.recipe.steps]
+
+
 @app.post(
     "/recipes/{recipe_id}/steps/",
     response_model=List[schemas.RecipeStepInDB],

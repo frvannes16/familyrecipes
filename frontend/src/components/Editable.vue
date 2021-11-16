@@ -74,11 +74,11 @@ export default defineComponent({
     align-items: center;
 }
 .slot {
-    flex-basis: 2;
+    flex-grow: 1;
+    margin-right: 24px;
 }
 
 .button {
-    flex-basis: 1;
     opacity: 0.3;
     transition: opacity 0.4s;
 }

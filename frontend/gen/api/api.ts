@@ -290,6 +290,19 @@ export interface RecipeStepCreate {
 /**
  * 
  * @export
+ * @interface RecipeStepEdit
+ */
+export interface RecipeStepEdit {
+    /**
+     * 
+     * @type {string}
+     * @memberof RecipeStepEdit
+     */
+    content: string;
+}
+/**
+ * 
+ * @export
  * @interface RecipeStepInDB
  */
 export interface RecipeStepInDB {
@@ -1148,6 +1161,50 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Update Step
+         * @param {number} stepId 
+         * @param {RecipeStepEdit} recipeStepEdit 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateStepRecipesStepsStepIdPost: async (stepId: number, recipeStepEdit: RecipeStepEdit, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'stepId' is not null or undefined
+            assertParamExists('updateStepRecipesStepsStepIdPost', 'stepId', stepId)
+            // verify required parameter 'recipeStepEdit' is not null or undefined
+            assertParamExists('updateStepRecipesStepsStepIdPost', 'recipeStepEdit', recipeStepEdit)
+            const localVarPath = `/recipes/steps/{step_id}/`
+                .replace(`{${"step_id"}}`, encodeURIComponent(String(stepId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(recipeStepEdit, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1295,6 +1352,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateRecipeRecipesRecipeIdPost(recipeId, recipeEdit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Update Step
+         * @param {number} stepId 
+         * @param {RecipeStepEdit} recipeStepEdit 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateStepRecipesStepsStepIdPost(stepId: number, recipeStepEdit: RecipeStepEdit, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RecipeStepInDB>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateStepRecipesStepsStepIdPost(stepId, recipeStepEdit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -1429,6 +1498,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         updateRecipeRecipesRecipeIdPost(recipeId: number, recipeEdit: RecipeEdit, options?: any): AxiosPromise<RecipeInDB> {
             return localVarFp.updateRecipeRecipesRecipeIdPost(recipeId, recipeEdit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update Step
+         * @param {number} stepId 
+         * @param {RecipeStepEdit} recipeStepEdit 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateStepRecipesStepsStepIdPost(stepId: number, recipeStepEdit: RecipeStepEdit, options?: any): AxiosPromise<Array<RecipeStepInDB>> {
+            return localVarFp.updateStepRecipesStepsStepIdPost(stepId, recipeStepEdit, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1587,6 +1667,19 @@ export class DefaultApi extends BaseAPI {
      */
     public updateRecipeRecipesRecipeIdPost(recipeId: number, recipeEdit: RecipeEdit, options?: any) {
         return DefaultApiFp(this.configuration).updateRecipeRecipesRecipeIdPost(recipeId, recipeEdit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update Step
+     * @param {number} stepId 
+     * @param {RecipeStepEdit} recipeStepEdit 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updateStepRecipesStepsStepIdPost(stepId: number, recipeStepEdit: RecipeStepEdit, options?: any) {
+        return DefaultApiFp(this.configuration).updateStepRecipesStepsStepIdPost(stepId, recipeStepEdit, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

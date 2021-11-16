@@ -143,6 +143,10 @@ class RecipeStepCreate(RecipeStepBase):
     pass
 
 
+class RecipeStepEdit(RecipeStepBase):
+    pass
+
+
 class RecipeStepInDB(RecipeStepBase):
     id: int
     recipe_id: int

@@ -497,6 +497,64 @@
                 ]
             }
         },
+        "/recipes/steps/{step_id}/": {
+            "post": {
+                "summary": "Update Step",
+                "operationId": "update_step_recipes_steps__step_id___post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Step Id",
+                            "type": "integer"
+                        },
+                        "name": "step_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecipeStepEdit"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Update Step Recipes Steps  Step Id   Post",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecipeStepInDB"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
         "/recipes/{recipe_id}/steps/": {
             "post": {
                 "summary": "Add Step",
@@ -913,6 +971,19 @@
             },
             "RecipeStepCreate": {
                 "title": "RecipeStepCreate",
+                "required": [
+                    "content"
+                ],
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "title": "Content",
+                        "type": "string"
+                    }
+                }
+            },
+            "RecipeStepEdit": {
+                "title": "RecipeStepEdit",
                 "required": [
                     "content"
                 ],
