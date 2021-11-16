@@ -1,6 +1,9 @@
 <template>
-    <h1>Create Recipe</h1>
     <div class="container">
+        <router-link :to="{ name: 'myrecipes' }">
+            <div class="back-button">&lt Back</div>
+        </router-link>
+        <h1>Create Recipe</h1>
         <recipe-edit-form :recipe-id="recipeInteger()"></recipe-edit-form>
     </div>
 </template>
@@ -29,6 +32,14 @@ export default defineComponent({
 .container {
     margin: 0 auto;
     width: 80%;
+    text-align: left;
+}
+
+h1 {
+    text-align: center;
+}
+
+.back-button {
     text-align: left;
 }
 </style>

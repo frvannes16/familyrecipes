@@ -1,12 +1,14 @@
 <template>
     <div class="container">
         <h1>My Recipes</h1>
-        <recipe-card
-            v-if="recipes"
-            v-for="recipe in recipes.data"
-            :recipe="recipe"
-            @click="() => showRecipe(recipe.id)"
-        ></recipe-card>
+        <n-space>
+            <recipe-card
+                v-if="recipes"
+                v-for="recipe in recipes.data"
+                :recipe="recipe"
+                @click="() => showRecipe(recipe.id)"
+            ></recipe-card>
+        </n-space>
         <n-button type="primary" size="large" @click="createNewRecipe" class="btn">Create Recipe</n-button>
     </div>
     <div class="selected-recipe" v-if="!!selectedRecipe">
@@ -85,6 +87,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
 .btn {
     margin: 24px 0;
 }
