@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouterOptions } from "vue-router";
 
 const LoginPage = () => import("../pages/Login.vue");
 const MyRecipesPage = () => import("../pages/MyRecipes.vue");
-const NewRecipePage = () => import("../pages/CreateRecipe.vue");
+const EditRecipePage = () => import("../pages/EditRecipe.vue");
 
 const options: RouterOptions = {
     history: createWebHistory(),
@@ -20,13 +20,11 @@ const options: RouterOptions = {
             path: '/recipes/me',
             name: 'myrecipes',
             component: MyRecipesPage,
-
-
         },
         {
-            path: '/recipes/new',
-            name: "newrecipe",
-            component: NewRecipePage,
+            path: '/recipes/:recipeId/edit',
+            name: "editrecipe",
+            component: EditRecipePage,
         }
 
     ]

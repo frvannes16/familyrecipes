@@ -7,12 +7,7 @@
             :recipe="recipe"
             @click="() => showRecipe(recipe.id)"
         ></recipe-card>
-        <n-button
-            type="primary"
-            size="large"
-            @click="navToCreateRecipePage"
-            class="btn"
-        >Create Recipe</n-button>
+        <n-button type="primary" size="large" @click="createNewRecipe" class="btn">Create Recipe</n-button>
     </div>
     <div class="selected-recipe" v-if="!!selectedRecipe">
         <view-recipe :recipe="selectedRecipe"></view-recipe>
@@ -23,9 +18,11 @@
 import { defineComponent } from "vue";
 import RecipeCard from "../components/RecipeCard.vue";
 import ViewRecipe from "../components/ViewRecipe.vue";
-import { NButton, NSpace } from "naive-ui";
+import { NButton, NSpace, useMessage } from "naive-ui";
 import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
-import { RouteLocationRaw, } from "vue-router";
+import { RouteLocationRaw } from "vue-router";
+
+
 
 export default defineComponent({
     name: "MyRecipes",
@@ -43,11 +40,29 @@ export default defineComponent({
                 this.recipes = response.data;
             }).catch(console.error);
         },
-        navToCreateRecipePage() {
-            const to: RouteLocationRaw = {
-                name: 'newrecipe'
-            };
-            this.$router.push(to);
+        createNewRecipe() {
+            // First, create a new recipe with a generic name.
+            const api = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
+            api.createUserRecipeRecipesPost({ name: "My New Recipe" }).then(response => {
+                if (response.status == 200) {
+                    const message = useMessage();
+
+                    message.info(`New recipe created: 'My New Recipe'`,
+                        { keepAliveOnHover: true });
+                    // Then navigate to the recipe edit page.
+                    const to: RouteLocationRaw = {
+                        name: 'editrecipe',
+                        params: {
+                            recipeId: response.data.id,
+                        }
+                    };
+                    this.$router.push(to);
+                } else {
+                    console.error(response);
+                }
+            }
+            )
+
         },
         showRecipe(recipeId: Number) {
             if (this.recipes) {
@@ -69,7 +84,7 @@ export default defineComponent({
 
 </script>
 
-<style>
+<style scoped>
 .btn {
     margin: 24px 0;
 }

@@ -157,7 +157,7 @@ class GetRecipesTest(DBTestCase):
 
         response = self.client.post(f"/recipes/", json=recipe_data)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         data = response.json()
         self.assertIsNotNone(data)
         data = data.copy()
@@ -326,6 +326,97 @@ class IngredientsTest(DBTestCase):
                 },
             ],
         )
+
+    def test_update_ingredient(self):
+        # Create a recipe with one ingredient
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        ingredient = models.RecipeIngredient(
+            position=0,
+            content="4 cloves garlic",
+            recipe_id=recipe.id,
+        )
+        self.db.add(ingredient)
+        self.db.commit()
+
+        update_ingredient_data = {"content": "5 cloves garlic"}
+
+        response = self.client.post(
+            f"/recipes/ingredients/{ingredient.id}/", json=update_ingredient_data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "id": 1,
+                    "position": 0,
+                    "content": "5 cloves garlic",
+                    "recipe_id": recipe.id,
+                },
+            ],
+        )
+
+    def test_update_ingredients_ingredient_doesnt_exist(self):
+        # create a recipe with one ingredient belonging to main user.
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        update_ingredient_data = {"content": "5 cloves garlic"}
+
+        response = self.client.post(
+            f"/recipes/ingredients/100/", json=update_ingredient_data
+        )
+
+        self.assertEqual(
+            response.status_code, status.HTTP_404_NOT_FOUND, response.json()
+        )
+
+    def test_update_ingredients_no_access(self):
+        # create a recipe with one ingredient belonging to main user.
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        ingredient = models.RecipeIngredient(
+            position=0,
+            content="4 cloves garlic",
+            recipe_id=recipe.id,
+        )
+        self.db.add(ingredient)
+        self.db.commit()
+
+        # change the logged in user and attempt to edit the ingredient. It should fail.
+
+        self.create_and_login_user(
+            "test2@example.com", password="lkajsdlkjasdLKJASDLKJ123!:!:!"
+        )
+
+        update_ingredient_data = {"content": "5 cloves garlic"}
+
+        response = self.client.post(
+            f"/recipes/ingredients/{ingredient.id}/", json=update_ingredient_data
+        )
+
+        self.assertEqual(
+            response.status_code, status.HTTP_403_FORBIDDEN, response.json()
+        )
+
+
+class StepsTest(DBTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = self.create_and_login_user()
 
     def test_put_step_to_recipe(self):
         # Create a recipe without steps

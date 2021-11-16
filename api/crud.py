@@ -104,6 +104,18 @@ def create_recipe(db: Session, author_id: int, recipe: schemas.RecipeCreate):
     return db_recipe
 
 
+def get_ingredient(db: Session, ingredient_id: int):
+    ingredient = db.query(models.RecipeIngredient).get(ingredient_id)
+    return ingredient
+
+
+def update_ingredient(
+    db: Session, ingredient: models.RecipeIngredient, edit: schemas.RecipeIngredientEdit
+):
+    setattr(ingredient, "content", edit.content)
+    db.commit()
+
+
 def append_recipe_ingredient(
     db: Session, recipe_id: int, ingredient: schemas.RecipeIngredientCreate
 ):

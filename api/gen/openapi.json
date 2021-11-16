@@ -151,7 +151,7 @@
                     "required": true
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
@@ -307,6 +307,64 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/RecipeInDB"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
+        "/recipes/ingredients/{ingredient_id}/": {
+            "post": {
+                "summary": "Update Ingredient",
+                "operationId": "update_ingredient_recipes_ingredients__ingredient_id___post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Ingredient Id",
+                            "type": "integer"
+                        },
+                        "name": "ingredient_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecipeIngredientEdit"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Update Ingredient Recipes Ingredients  Ingredient Id   Post",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecipeIngredientInDB"
+                                    }
                                 }
                             }
                         }
@@ -736,6 +794,19 @@
             },
             "RecipeIngredientCreate": {
                 "title": "RecipeIngredientCreate",
+                "required": [
+                    "content"
+                ],
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "title": "Content",
+                        "type": "string"
+                    }
+                }
+            },
+            "RecipeIngredientEdit": {
+                "title": "RecipeIngredientEdit",
                 "required": [
                     "content"
                 ],

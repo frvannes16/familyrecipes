@@ -15,7 +15,8 @@
 - [x] Add admin user role.
 - [x] Autogenerate axios methods from fastapi swagger file. Add package.json script or python script for it.
 - [ ] Investigate CSRF?
-- [ ] Remove the multiple fields in the ingredients model. Just have one!
+- [x] Remove the multiple fields in the ingredients model. Just have one!
+- [ ] Improved front end error handling. Show the message!
 
 If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
 

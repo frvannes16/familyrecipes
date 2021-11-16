@@ -122,6 +122,10 @@ class RecipeIngredientCreate(RecipeIngredientBase):
     pass
 
 
+class RecipeIngredientEdit(RecipeIngredientBase):
+    pass
+
+
 class RecipeIngredientInDB(RecipeIngredientBase):
     id: int
     recipe_id: int

@@ -15,7 +15,18 @@
         <ol>
             <li v-for="step in recipe.steps">{{ step.content }}</li>
         </ol>
-        <n-button type="primary" size="large" @click="generateCookbookPdf" class="btn">Make Cookbook</n-button>
+        <n-button
+            type="primary"
+            size="large"
+            @click="$router.push({ name: 'editrecipe', params: { recipeId: recipe.id } })"
+            class="btn"
+        >Edit Recipe</n-button>
+        <n-button
+            type="default"
+            size="large"
+            @click="generateCookbookPdf"
+            class="btn"
+        >Make Recipe Card</n-button>
     </div>
 </template>
 <script lang="ts">
@@ -59,7 +70,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .recipe-wrapper {
     text-align: left;
     width: 60vw;

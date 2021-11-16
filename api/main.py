@@ -19,7 +19,12 @@ logging_config.fileConfig("api/logging.conf", disable_existing_loggers=False)
 # setup app
 app = FastAPI()
 
-origins = ["*"]  # TODO: make production-ready.
+origins = [
+    "localhost:8000",
+    "https://localhost:8000",
+    "https://localhost:3000",
+    "localhost:3000",
+]  # TODO: make production-ready.
 
 app.add_middleware(
     CORSMiddleware,
@@ -62,7 +67,6 @@ async def get_recipes(
 @app.post(
     "/recipes/",
     response_model=schemas.RecipeInDB,
-    status_code=status.HTTP_201_CREATED,
 )
 async def create_user_recipe(
     recipe: schemas.RecipeCreate,
@@ -135,6 +139,38 @@ async def get_single_recipe(
         )
 
     return schemas.RecipeInDB.from_orm(recipe)
+
+
+@app.post(
+    "/recipes/ingredients/{ingredient_id}/",
+    response_model=List[schemas.RecipeIngredientInDB],
+)
+async def update_ingredient(
+    ingredient_id: int,
+    ingredient_edit: schemas.RecipeIngredientEdit,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get ingredient or 404
+    ingredient = crud.get_ingredient(db, ingredient_id)
+    if not ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="ingredient does not exist"
+        )
+
+    if ingredient.recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ingredient does not belong to user",
+        )
+
+    # Edit the ingredient
+    crud.update_ingredient(db, ingredient, ingredient_edit)
+    # Return all of the recipe's ingredients
+    return [
+        schemas.RecipeIngredientInDB.from_orm(ingredient)
+        for ingredient in ingredient.recipe.ingredients
+    ]
 
 
 @app.post(
