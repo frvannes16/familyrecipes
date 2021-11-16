@@ -17,7 +17,6 @@
         <div class="recipe-wrapper">
             <div class="ingredients-wrapper">
                 <h3>Ingredients</h3>
-
                 <editable
                     v-for="(ingredient, idx) in form.ingredients"
                     height="35px"
@@ -44,10 +43,12 @@
                     <p>
                         <strong>Step {{ idx + 1 }}</strong>
                     </p>
-                    <editable @edit-complete="() => editStep(step)">
+                    <editable @edit-complete="() => editStep(step)" class="editable">
                         <template v-slot:edit-state="props">
                             <n-input
                                 @input="value => updateStoredValue('STEP', idx, value)"
+                                @blur="props.toggleEditState(false)"
+                                @change="props.toggleEditState(false)"
                                 :default-value="step.content"
                                 type="textarea"
                                 placeholder="Details"
@@ -208,11 +209,16 @@ export default defineComponent({
 }
 
 .ingredients-wrapper .editable {
-    margin: 8px 0;
+    margin: 12px 0;
 }
 
 .steps-wrapper {
     flex-basis: 75%;
     padding: 16px;
+}
+
+.steps-wrapper .editable {
+    margin: 12px 0;
+    padding-left: 12px;
 }
 </style>

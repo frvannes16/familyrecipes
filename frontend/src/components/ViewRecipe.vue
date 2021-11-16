@@ -15,30 +15,32 @@
         <ol>
             <li v-for="step in recipe.steps">{{ step.content }}</li>
         </ol>
-        <n-button
-            type="primary"
-            size="large"
-            @click="$router.push({ name: 'editrecipe', params: { recipeId: recipe.id } })"
-            class="btn"
-        >Edit Recipe</n-button>
-        <n-button
-            type="default"
-            size="large"
-            @click="generateCookbookPdf"
-            class="btn"
-        >Make Recipe Card</n-button>
+        <n-space>
+            <n-button
+                type="primary"
+                size="large"
+                @click="$router.push({ name: 'editrecipe', params: { recipeId: recipe.id } })"
+                class="btn"
+            >Edit Recipe</n-button>
+            <n-button
+                type="default"
+                size="large"
+                @click="generateCookbookPdf"
+                class="btn"
+            >Make Recipe Card</n-button>
+        </n-space>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { Configuration, RecipeInDB } from "../api";
-import { NButton } from "naive-ui";
+import { NButton, NSpace } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
 
 
 export default defineComponent({
     name: "ViewRecipe",
-    components: { NButton },
+    components: { NButton, NSpace },
     props: {
         recipe: {
             type: Object as PropType<RecipeInDB>,

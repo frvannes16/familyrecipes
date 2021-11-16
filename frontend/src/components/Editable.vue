@@ -9,14 +9,16 @@
             ></slot>
             <slot v-else :toggleEditState="toggleEditState"></slot>
         </div>
-        <n-button circle @click="isEditing = !isEditing" class="button">
-            <template #icon>
-                <n-icon>
-                    <check v-if="isEditing" />
-                    <edit-regular v-else />
-                </n-icon>
-            </template>
-        </n-button>
+        <div @click="isEditing = !isEditing" class="button">
+            <n-button circle>
+                <template #icon>
+                    <n-icon>
+                        <check v-if="isEditing" />
+                        <edit-regular v-else />
+                    </n-icon>
+                </template>
+            </n-button>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -75,12 +77,14 @@ export default defineComponent({
 }
 .slot {
     flex-grow: 1;
-    margin-right: 24px;
+    width: 85%;
+    padding-right: 12px;
 }
 
 .button {
     opacity: 0.3;
     transition: opacity 0.4s;
+    width: 15%;
 }
 
 .editable-wrapper:hover .button {
