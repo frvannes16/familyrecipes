@@ -31,6 +31,15 @@ import { RouteLocationRaw } from "vue-router";
 export default defineComponent({
     name: "MyRecipes",
     components: { RecipeCard, ViewRecipe, NButton, NSpace, ProgressBar },
+    setup() {
+        const message = useMessage();
+        return {
+            info(msg: string) {
+                // TODO: move this into a mixin.
+                message.info(msg);
+            }
+        }
+    },
     data() {
         return {
             recipes: undefined as PaginatedRecipes | undefined,
@@ -49,9 +58,7 @@ export default defineComponent({
             const api = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
             api.createUserRecipeRecipesPost({ name: "My New Recipe" }).then(response => {
                 if (response.status == 200) {
-                    const message = useMessage();
-
-                    message.info(`New recipe created: 'My New Recipe'`,
+                    this.info(`New recipe created: 'My New Recipe'`,
                         { keepAliveOnHover: true });
                     // Then navigate to the recipe edit page.
                     const to: RouteLocationRaw = {

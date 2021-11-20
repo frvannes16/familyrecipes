@@ -7,9 +7,10 @@ import { NMessageProvider } from 'naive-ui';
 </script>
 
 <template>
-  <n-message-provider></n-message-provider>
-  <img alt="Vue logo" id="logo" src="./assets/logo.png" />
-  <router-view></router-view>
+  <n-message-provider>
+    <img alt="Vue logo" id="logo" src="./assets/logo.png" />
+    <router-view></router-view>
+  </n-message-provider>
 </template>
 
 <style>
