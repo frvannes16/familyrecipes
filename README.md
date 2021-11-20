@@ -10,16 +10,17 @@ Family Recipes is a website for storing your family's recipes.
 2. Activate the venv with `source .venv/bin/activate`.
 3. Install pip-tools: `pip install pip-tools`
 4. Install all other dependencies with `pip-sync`
-5. Copy the `.env-example` file into a `.env` file. The app will parse the variables in `.env` in into the app settings, in addition to any environment variables that you have set. Change the `SECRET_KEY` varible to the results of running `echo -n $(openssl rand -base64 128)`
-6. Run the migrations:
+5. Install weasyprint core libraries with `sudo apt install libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 libffi-dev libjpeg-dev libopenjp2-7-dev`
+6. Copy the `.env-example` file into a `.env` file. The app will parse the variables in `.env` in into the app settings, in addition to any environment variables that you have set. Change the `SECRET_KEY` varible to the results of running `echo -n $(openssl rand -base64 128)`
+7. Run the migrations:
 ```bash
 alembic upgrade head
 ```
-7. Install `yarn` if it isn't already installed: `npm install -g yarn`.
-8. Install frontend dependencies: `pushd frontend && yarn && popd`.
-9. Follow the instructions in https://www.section.io/engineering-education/how-to-get-ssl-https-for-localhost/ exactly.
-10. Start the api using uvicorn. `uvicorn api.main:app --ssl-keyfile=./cert/CA/localhost/localhost.key --ssl-certfile=./cert/CA/localhost/localhost.crt `. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
-11. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
+8. Install `yarn` if it isn't already installed: `npm install -g yarn`.
+9. Install frontend dependencies: `pushd frontend && yarn && popd`.
+10. Follow the instructions in https://www.section.io/engineering-education/how-to-get-ssl-https-for-localhost/ exactly.
+11. Start the api using uvicorn. `uvicorn api.main:app --ssl-keyfile=./cert/CA/localhost/localhost.key --ssl-certfile=./cert/CA/localhost/localhost.crt `. In a separate terminal session, run the frontend server: `pushd frontend && yarn dev`.
+12. Visit http://127.0.0.1:8000/docs to see the available endpoints and try them out!
 
 
 ## Migrations
