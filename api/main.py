@@ -109,12 +109,12 @@ async def generate_recipe_pdf(
     recipe = crud.get_recipe(db, recipe_id)
     if not recipe:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Could not find recipe with id {recipe_id}",
         )
     if recipe.author_id != user.id:
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have access to this recipe.",
         )
     recipe_list = [schemas.RecipeInDB.from_orm(recipe)]
@@ -143,7 +143,7 @@ async def get_user_recipes(
 
 @app.get("/users/{author_id}/recipes/generate-pdf/")
 async def generate_user_recipes_pdf(
-    author_id: str,
+    author_id: int,
     user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
     db: Session = Depends(get_db),
 ):

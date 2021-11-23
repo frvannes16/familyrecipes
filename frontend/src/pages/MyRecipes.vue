@@ -22,10 +22,12 @@
 import { defineComponent, ref } from "vue";
 import { RouteLocationRaw, useRouter } from "vue-router";
 import { NButton, NSpace, useMessage } from "naive-ui";
-import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
+import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory, Configuration } from "@/api";  // Typescript response interface
 import RecipeCard from "@/components/RecipeCard.vue";
 import ViewRecipe from "@/components/ViewRecipe.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import useUserInfo from "@/composables/useUserInfo";
+import downloadPdfInBackground from "@/utils/pdf";
 
 
 
@@ -34,8 +36,11 @@ export default defineComponent({
     components: { RecipeCard, ViewRecipe, NButton, NSpace, ProgressBar },
     setup() {
         const API = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
+        const PDF_API = DefaultApiFactory(new Configuration({ baseOptions: { responseType: 'blob' } }), axiosConfigFactory().basePath);
         const message = useMessage();
         const router = useRouter();
+        const { userState, loadUserInfo } = useUserInfo();
+
 
         // Recipes
         const recipes = ref<PaginatedRecipes | undefined>(undefined);
@@ -81,7 +86,29 @@ export default defineComponent({
 
         // Generate cookbook from all recipes.
 
-        const generateCookbook = () => { };
+        const generateCookbook = () => {
+            if (!userState.loaded || !userState.currentUser?.id) {
+                // load user data and retry.
+                loadUserInfo().then(() => {
+                    generateCookbook()
+                }).catch(error => {
+                    console.error("User ID not available to generate user cookbook PDF.");
+                    message.error("Error encountered when generating user cookbook. Please try again later.");
+                });
+            }
+            else {
+                PDF_API.generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(userState.currentUser.id).then(response => {
+                    downloadPdfInBackground(response.data, 'cookbook.pdf');
+                }).catch(error => {
+                    console.error(error);
+                    if (error.response.data?.detail) {
+                        message.error(error.response.data.detail);
+                    } else {
+                        message.error("Could not generate cookbook. Please try again later.");
+                    }
+                });
+            }
+        };
 
         // Init procedures
         loadAllRecipes();
@@ -92,7 +119,7 @@ export default defineComponent({
             showSelectedRecipe,
             createNewRecipe,
             generateCookbook
-        }
+        };
     }
 });
 

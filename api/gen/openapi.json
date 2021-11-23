@@ -381,6 +381,48 @@
                 ]
             }
         },
+        "/users/{author_id}/recipes/generate-pdf/": {
+            "get": {
+                "summary": "Generate User Recipes Pdf",
+                "operationId": "generate_user_recipes_pdf_users__author_id__recipes_generate_pdf__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Author Id",
+                            "type": "integer"
+                        },
+                        "name": "author_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            }
+        },
         "/recipes/ingredients/{ingredient_id}/": {
             "post": {
                 "summary": "Update Ingredient",

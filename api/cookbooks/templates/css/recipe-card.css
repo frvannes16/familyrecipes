@@ -69,3 +69,7 @@ html {
   width: 100%;
   display: block;
 }
+
+.recipe {
+  page-break-before: always;
+}

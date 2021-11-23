@@ -847,6 +847,44 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Generate User Recipes Pdf
+         * @param {number} authorId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet: async (authorId: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'authorId' is not null or undefined
+            assertParamExists('generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet', 'authorId', authorId)
+            const localVarPath = `/users/{author_id}/recipes/generate-pdf/`
+                .replace(`{${"author_id"}}`, encodeURIComponent(String(authorId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1263,6 +1301,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Generate User Recipes Pdf
+         * @param {number} authorId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1418,6 +1467,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Generate User Recipes Pdf
+         * @param {number} authorId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId: number, options?: any): AxiosPromise<any> {
+            return localVarFp.generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get My User
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1568,6 +1627,18 @@ export class DefaultApi extends BaseAPI {
      */
     public generateRecipePdfRecipesRecipeIdGeneratePdfGet(recipeId: number, options?: any) {
         return DefaultApiFp(this.configuration).generateRecipePdfRecipesRecipeIdGeneratePdfGet(recipeId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Generate User Recipes Pdf
+     * @param {number} authorId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId: number, options?: any) {
+        return DefaultApiFp(this.configuration).generateUserRecipesPdfUsersAuthorIdRecipesGeneratePdfGet(authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

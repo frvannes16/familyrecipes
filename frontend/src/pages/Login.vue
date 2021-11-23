@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <n-card>
-            <n-tabs default-value="signIn" size="large">
+            <n-tabs default-value="signin" size="large">
                 <n-tab-pane name="signin" tab="Sign in">
                     <n-form>
                         <n-form-item-row>
@@ -13,11 +13,11 @@
                                 type="password"
                                 show-password-on="mousedown"
                                 placeholder="Password"
-                                @change="onSignIn(navigateToUserPage)"
+                                @change="onSignIn"
                             />
                         </n-form-item-row>
                     </n-form>
-                    <n-button type="primary" block @click="onSignIn(navigateToUserPage)">Sign In</n-button>
+                    <n-button type="primary" block @click="onSignIn">Sign In</n-button>
                 </n-tab-pane>
                 <n-tab-pane name="signup" tab="Sign Up">
                     <n-form>
@@ -40,11 +40,11 @@
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
                                 placeholder="Confirm password"
-                                @change="onSignUp(navigateToUserPage)"
+                                @change="onSignUp"
                             />
                         </n-form-item-row>
                     </n-form>
-                    <n-button type="primary" block @click="onSignUp(navigateToUserPage)">Sign Up</n-button>
+                    <n-button type="primary" block @click="onSignUp">Sign Up</n-button>
                 </n-tab-pane>
             </n-tabs>
         </n-card>
@@ -79,10 +79,9 @@ export default defineComponent({
         return {
             MIN_PASSWORD_LENGTH,
             signIn,
-            onSignIn,
+            onSignIn: onSignIn(navigateToUserPage),
             signUp,
-            onSignUp,
-            navigateToUserPage
+            onSignUp: onSignUp(navigateToUserPage)
         }
     },
 })
