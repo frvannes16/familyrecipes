@@ -7,7 +7,7 @@
                 v-if="recipes"
                 v-for="recipe in recipes.data"
                 :recipe="recipe"
-                @click="() => showRecipe(recipe.id)"
+                @click="() => showSelectedRecipe(recipe.id)"
             ></recipe-card>
         </n-space>
         <n-button type="primary" size="large" @click="createNewRecipe" class="btn">Create Recipe</n-button>
@@ -18,13 +18,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import RecipeCard from "../components/RecipeCard.vue";
-import ViewRecipe from "../components/ViewRecipe.vue";
-import ProgressBar from "../components/ProgressBar.vue";
+import { defineComponent, ref } from "vue";
+import { RouteLocationRaw, useRouter } from "vue-router";
 import { NButton, NSpace, useMessage } from "naive-ui";
-import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
-import { RouteLocationRaw } from "vue-router";
+import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
+import RecipeCard from "@/components/RecipeCard.vue";
+import ViewRecipe from "@/components/ViewRecipe.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
 
 
 
@@ -32,33 +32,23 @@ export default defineComponent({
     name: "MyRecipes",
     components: { RecipeCard, ViewRecipe, NButton, NSpace, ProgressBar },
     setup() {
+        const API = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
         const message = useMessage();
-        return {
-            info(msg: string) {
-                // TODO: move this into a mixin.
-                message.info(msg);
-            }
-        }
-    },
-    data() {
-        return {
-            recipes: undefined as PaginatedRecipes | undefined,
-            selectedRecipe: undefined as RecipeInDB | undefined,
-        }
-    },
-    methods: {
-        loadAllRecipes() {
-            const api = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
-            api.getRecipesRecipesGet(1, 10).then(response => {
-                this.recipes = response.data;
+        const router = useRouter();
+
+        // Recipes
+        const recipes = ref<PaginatedRecipes | undefined>(undefined);
+        const loadAllRecipes = () => {
+            API.getRecipesRecipesGet(1, 10).then(response => {
+                recipes.value = response.data;
             }).catch(console.error);
-        },
-        createNewRecipe() {
+        };
+
+        const createNewRecipe = () => {
             // First, create a new recipe with a generic name.
-            const api = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
-            api.createUserRecipeRecipesPost({ name: "My New Recipe" }).then(response => {
+            API.createUserRecipeRecipesPost({ name: "My New Recipe" }).then(response => {
                 if (response.status == 200) {
-                    this.info(`New recipe created: 'My New Recipe'`,
+                    message.info(`New recipe created: 'My New Recipe'`,
                         { keepAliveOnHover: true });
                     // Then navigate to the recipe edit page.
                     const to: RouteLocationRaw = {
@@ -67,30 +57,37 @@ export default defineComponent({
                             recipeId: response.data.id,
                         }
                     };
-                    this.$router.push(to);
+                    router.push(to);
                 } else {
                     console.error(response);
                 }
             }
             )
+        };
 
-        },
-        showRecipe(recipeId: Number) {
-            if (this.recipes) {
-                const selectedRecipe = this.recipes.data.find(recipe => recipe.id == recipeId);
-                if (!!selectedRecipe) {
-                    this.selectedRecipe = selectedRecipe;
+        // Show Recipe
+        const selectedRecipe = ref<RecipeInDB | undefined>(undefined);
+        const showSelectedRecipe = (recipeId: Number) => {
+            if (recipes.value?.data) {
+                const targetRecipe = recipes.value?.data.find(recipe => recipe.id == recipeId);
+                if (targetRecipe) {
+                    selectedRecipe.value = targetRecipe;
                 } else {
                     console.error("Unknown recipe selected with ID " + String(recipeId));
                 }
             }
-        }
-    },
-    created() {
-        this.loadAllRecipes();
-        console.log(this.selectedRecipe);
-    }
+        };
 
+        loadAllRecipes();
+
+
+        return {
+            recipes,
+            selectedRecipe,
+            showSelectedRecipe,
+            createNewRecipe,
+        }
+    }
 });
 
 </script>

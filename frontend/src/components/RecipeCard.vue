@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { NCard } from "naive-ui";
-import { RecipeInDB } from "../api";  // Typescript interface
+import { RecipeInDB } from "@/api";  // Typescript interface
 
 
 

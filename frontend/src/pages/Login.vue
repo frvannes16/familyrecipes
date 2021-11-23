@@ -1,32 +1,32 @@
 <template>
     <div class="container">
         <n-card>
-            <n-tabs default-value="signin" size="large">
+            <n-tabs default-value="signIn" size="large">
                 <n-tab-pane name="signin" tab="Sign in">
                     <n-form>
                         <n-form-item-row>
-                            <n-input v-model:value="signin.email" placeholder="Email" />
+                            <n-input v-model:value="signIn.email" placeholder="Email" />
                         </n-form-item-row>
                         <n-form-item-row>
                             <n-input
-                                v-model:value="signin.password"
+                                v-model:value="signIn.password"
                                 type="password"
                                 show-password-on="mousedown"
                                 placeholder="Password"
-                                @change="onSignIn"
+                                @change="onSignIn(navigateToUserPage)"
                             />
                         </n-form-item-row>
                     </n-form>
-                    <n-button type="primary" block @click="onSignIn">Sign In</n-button>
+                    <n-button type="primary" block @click="onSignIn(navigateToUserPage)">Sign In</n-button>
                 </n-tab-pane>
                 <n-tab-pane name="signup" tab="Sign Up">
                     <n-form>
                         <n-form-item-row>
-                            <n-input v-model:value="signup.email" placeholder="Email" />
+                            <n-input v-model:value="signUp.email" placeholder="Email" />
                         </n-form-item-row>
                         <n-form-item-row>
                             <n-input
-                                v-model:value="signup.password"
+                                v-model:value="signUp.password"
                                 type="password"
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
@@ -35,16 +35,16 @@
                         </n-form-item-row>
                         <n-form-item-row>
                             <n-input
-                                v-model:value="signup.confirmPassword"
+                                v-model:value="signUp.confirmPassword"
                                 type="password"
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
                                 placeholder="Confirm password"
-                                @change="onSignUp"
+                                @change="onSignUp(navigateToUserPage)"
                             />
                         </n-form-item-row>
                     </n-form>
-                    <n-button type="primary" block @click="onSignUp">Sign Up</n-button>
+                    <n-button type="primary" block @click="onSignUp(navigateToUserPage)">Sign Up</n-button>
                 </n-tab-pane>
             </n-tabs>
         </n-card>
@@ -53,69 +53,38 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { RouteLocationRaw, useRouter } from "vue-router";
 import { NButton, NInput, NForm, NFormItem, NTabs, NTabPane, NFormItemRow, NCard } from 'naive-ui';
-import { axiosConfigFactory, AuthApiFactory } from "../api/index";
-import { RouteLocationRaw } from "vue-router";
-
+import useSignIn from "@/composables/useSignIn";
+import useSignUp from "@/composables/useSignUp";
 
 export default defineComponent({
     components: { NButton, NInput, NForm, NFormItem, NTabs, NTabPane, NFormItemRow, NCard },
-    data() {
-        return {
-            signin: {
-                email: "",
-                password: ""
-            },
-            signup: {
-                email: "",
-                password: "",
-                confirmPassword: ""
+    setup() {
+        const MIN_PASSWORD_LENGTH = 12;
+        const router = useRouter();
 
-            },
-            MIN_PASSWORD_LENGTH: 12
-        }
-    },
-    methods: {
-        onSignUp() {
-            // create a new user.
-            console.log("on Sign Up ", this.signup)
-            const api = AuthApiFactory(undefined, axiosConfigFactory().basePath);
-            const createUserResponse = api.createUserAuthUsersPost({
-                email: this.signup.email,
-                password: this.signup.password,
-            });
-            createUserResponse.then(response => {
-                if (response?.status == 200 && response?.data) {
-                    console.log("user succesfully created. Signing in");
-                    api.loginAuthTokenPost(response.data.email, this.signup.password)
-                        .then(response => {
-                            if (response.status == 200 && response.data.access_token) {
-                                this.navigateToUserPage();
-                            }
-                        });
-                }
-            }).catch(error => {
-                console.error(error);
-            })
-        },
-        onSignIn() {
-            const api = AuthApiFactory(undefined, axiosConfigFactory().basePath);
-            if (this.signin.email && this.signin.password) {
-                api.loginAuthTokenPost(this.signin.email, this.signin.password).then(response => {
-                    if (response?.status == 200 && response.data.access_token) {
-                        this.navigateToUserPage();
-                    }
-                });
-            }
-
-        },
-        navigateToUserPage() {
+        // Navigation
+        const navigateToUserPage = () => {
             const to: RouteLocationRaw = {
                 name: 'myrecipes'
             };
-            this.$router.push(to);  // unhandled promise
+            router.push(to);  // TODO: unhandled promise
+        };
+
+        const { signIn, onSignIn } = useSignIn();
+        const { signUp, onSignUp } = useSignUp();
+
+
+        return {
+            MIN_PASSWORD_LENGTH,
+            signIn,
+            onSignIn,
+            signUp,
+            onSignUp,
+            navigateToUserPage
         }
-    }
+    },
 })
 </script>
 
