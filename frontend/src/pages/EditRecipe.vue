@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import RecipeEditForm from "../components/RecipeEditForm.vue";
+import RecipeEditForm from "@/components/RecipeEditForm.vue";
 export default defineComponent({
     name: "EditRecipe",
     components: { RecipeEditForm },

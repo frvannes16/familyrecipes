@@ -33,9 +33,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Configuration, RecipeInDB } from "../api";
 import { NButton, NSpace } from "naive-ui";
-import { axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
+import { axiosConfigFactory, DefaultApiFactory, Configuration, RecipeInDB  } from "@/api"; 
 
 
 export default defineComponent({

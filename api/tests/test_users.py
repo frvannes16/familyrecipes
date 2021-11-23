@@ -84,6 +84,23 @@ class UsersTestCase(DBTestCase):
 
         assert response.json()["detail"][0]["type"] == "value_error.email"
 
+    def test_create_same_user_twice_notifies_user(self):
+        # Ensure that when we sign up the same user email again, ask the user to sign in.
+        data = {
+            "email": "example@example.com",
+            "first_name": "Example",
+            "last_name": "User",
+            "password": "testPassword!123",
+        }
+
+        response = self.client.post("/auth/users/", json=data)
+        assert response.status_code == status.HTTP_200_OK
+
+        # Creat the user a second time.
+        response = self.client.post("/auth/users/", json=data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json()['detail'] == "User already exists. Please sign in with your username and password."
+
 
 class AuthTestCase(DBTestCase):
     def test_create_and_login_user(self):

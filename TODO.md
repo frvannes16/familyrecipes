@@ -17,7 +17,8 @@
 - [ ] Investigate CSRF?
 - [x] Remove the multiple fields in the ingredients model. Just have one!
 - [ ] Improved front end error handling. Show the message!
-- [ ] Create a cookbook from all recipes
+- [ ] Create Cookbook button!
+- [ ] Convert all components to composition API.
 
 If the async sqlalchemy doesn't go well, just use synchronous sqlalchemy.
 

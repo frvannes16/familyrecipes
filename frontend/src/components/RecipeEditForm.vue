@@ -67,8 +67,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
-import { axiosConfigFactory, DefaultApiFactory } from "../api";  // Typescript response interface
-import Editable from "./Editable.vue";
+import { axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
+import Editable from "@/components/Editable.vue";
 
 
 interface Step {
