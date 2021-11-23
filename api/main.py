@@ -5,9 +5,9 @@ from typing import List
 from fastapi import FastAPI, Depends, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
+from fastapi.routing import _prepare_response_content
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 from api import schemas, crud, auth
 from api.database import get_db
@@ -139,6 +139,28 @@ async def get_user_recipes(
             status_code=status.HTTP_404_NOT_FOUND, detail="User does not exist"
         )
     return crud.get_recipes(db=db, recipe_params=params, author_id=author_id)
+
+
+@app.get("/users/{author_id}/recipes/generate-pdf/")
+async def generate_user_recipes_pdf(
+    author_id: str,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    if user.id != author_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="cannot access user data"
+        )
+    author = crud.get_user(db, user.id)
+    if not author:
+        raise Exception("Could not retrieve user with known ID. Weird.")
+    recipe_list = [schemas.RecipeInDB.from_orm(recipe) for recipe in author.recipes]
+    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(recipe_list)
+    response = Response(content=pdf_bytes, media_type="application/pdf")
+    response.headers.update(
+        {"Content-Disposition": "attachment", "filename": "my-recipes.pdf"}
+    )
+    return response
 
 
 @app.get("/recipes/{recipe_id}/", response_model=schemas.RecipeInDB)

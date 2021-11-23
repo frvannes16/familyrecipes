@@ -163,3 +163,42 @@ class CookbookMakerAPITest(DBTestCase):
 
         self.assertIsNotNone(pdf_bytes)
         self.assertIsInstance(pdf_bytes, bytes)
+
+    def test_generate_cookbook_from_all_personal_recipes(self):
+        # SETUP: Generate a user and multiple recipes.
+        created_user = self.create_and_login_user()
+        for recipe_idx in range(8):
+            recipe = models.Recipe(
+                name=f"Test Recipe {recipe_idx}",
+                author_id=created_user.id,
+                created_at=datetime.datetime.utcnow(),
+            )
+            self.db.add(recipe)
+            self.db.commit()
+
+            steps = [
+                models.RecipeStep(
+                    position=idx,
+                    content=f"Add {idx + 1} flax eggs",
+                    recipe_id=recipe.id,
+                )
+                for idx in range(0, 5)
+            ]
+            ingredients = [
+                models.RecipeIngredient(
+                    position=idx,
+                    content=f"{idx + 1} tbsp ground flax seed",
+                    recipe_id=recipe.id,
+                )
+                for idx in range(0, 5)
+            ]
+            self.db.bulk_save_objects(steps)
+            self.db.bulk_save_objects(ingredients)
+            self.db.commit()
+
+        # Generate a PDF from the user's entire recipe library.
+        response = self.client.get(f"/users/{created_user.id}/recipes/generate-pdf/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response)
+        self.assertEqual(response.headers.get("content-type"), "application/pdf")
+        self.assertIsNotNone(response.content)
+        self.assertIn(b"Test Recipe", response.content)
