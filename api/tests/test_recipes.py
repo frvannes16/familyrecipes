@@ -121,8 +121,7 @@ class GetRecipesTest(DBTestCase):
         self.create_test_recipes(created_user.id, 15)
 
         # Create a secondary user and create 10 recipes belonging to them.
-        other_user = UserCreate(password="aBadPa$$w0rd!!", email="test2@example.com")
-        created_other_user = create_user(db=self.db, user=other_user)
+        created_other_user = self.create_user(password="aBadPa$$w0rd!!", email="test2@example.com")
         self.create_test_recipes(created_other_user.id, 10)
 
         # Retrieve all recipes. There should be 25 in total
@@ -173,8 +172,8 @@ class GetRecipesTest(DBTestCase):
                 "author_id": session_user.id,
                 "author": {
                     "email": "test@example.com",
-                    "first_name": None,
-                    "last_name": None,
+                    "first_name": "Test",
+                    "last_name": "User",
                     "id": session_user.id,
                 },
             },

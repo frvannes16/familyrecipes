@@ -82,8 +82,16 @@ class DBTestCase(TestCase):
         logger.debug("Destroying the test DB.")
         os.remove(self.TEST_DB_LOCATION)
 
-    def create_user(self, email="test@example.com", password="aBadPa$$w0rd!!") -> User:
-        new_user = UserCreate(password=password, email=email)
+    def create_user(
+        self,
+        email="test@example.com",
+        password="aBadPa$$w0rd!!",
+        first_name="Test",
+        last_name="User",
+    ) -> User:
+        new_user = UserCreate(
+            password=password, email=email, first_name=first_name, last_name=last_name
+        )
         created_user = create_user(db=self.db, user=new_user)
         return created_user
 
@@ -99,8 +107,12 @@ class DBTestCase(TestCase):
         assert response.status_code == status.HTTP_200_OK, response.json()
 
     def create_and_login_user(
-        self, email="test@example.com", password="aBadPa$$w0rd!!"
+        self,
+        email="test@example.com",
+        password="aBadPa$$w0rd!!",
+        first_name="Test",
+        last_name="User",
     ):
-        created_user = self.create_user(email, password)
+        created_user = self.create_user(email, password, first_name, last_name)
         self.login(email, password)
         return created_user

@@ -1,5 +1,5 @@
-import { useMessage } from "naive-ui";
-import { reactive } from "vue";
+import { NForm, useMessage } from "naive-ui";
+import { reactive, ref } from "vue";
 import { axiosConfigFactory, AuthApiFactory } from "@/api/index";
 
 
@@ -7,12 +7,36 @@ export default () => {
     const message = useMessage();
     const API = AuthApiFactory(undefined, axiosConfigFactory().basePath);
 
-
-    const signIn = reactive({ email: "" as string, password: "" as string })
+    const formRef = ref<null | typeof NForm>(null)
+    const formVals = reactive({ email: "" as string, password: "" as string })
+    const formRules = {
+        email: {
+            required: true,
+            trigger: 'blur',
+            message: 'Please enter your email address'
+        },
+        password: {
+            required: true,
+            trigger: 'blur',
+            message: 'Please enter your password'
+        }
+    };
     const onSignIn = (successCallback: Function) => {
         return () => {
-            if (signIn.email && signIn.password) {
-                API.loginAuthTokenPost(signIn.email, signIn.password).then(response => {
+            // Frontend validation first.
+            if (!formRef.value) {
+                console.error("Sign in formref not mounted.")
+                return;
+            }
+            formRef.value.validate((errors: any) => {
+                if (errors) {
+                    message.error("Invalid sign in.")
+                }
+            });
+        
+
+            if (formVals.email && formVals.password) {
+                API.loginAuthTokenPost(formVals.email, formVals.password).then(response => {
                     if (response?.status == 200 && response.data.access_token) {
                         successCallback();
                     }
@@ -28,7 +52,9 @@ export default () => {
     }
 
     return {
-        signIn,
+        formRef,
+        formRules,
+        formVals,
         onSignIn
     };
 };

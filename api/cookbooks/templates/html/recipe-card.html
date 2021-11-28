@@ -12,11 +12,27 @@
 
 <body>
 
+    <div id="cover">
+        <img src="file:///home/fvannes/src/familyrecipes/api/cookbooks/templates/assets/salad.jpg">
+            <h1>{{ cookbook_name }}</h1>
+            <h2>{{ by_line }}</h2>
+        </img>
+    </div>
+
+    <article id="contents">
+        <h1>Table of Contents</h1>
+        <ul>
+            {%- for recipe in recipes %}
+            <li><a href="#recipe-{{recipe.id}}-header">{{ recipe.name }}</a></li>
+            {%- endfor %}
+        </ul>
+    </article>
+
     <article id="recipes">
         {% for recipe in recipes %}
         <section class="recipe">
             <div class="header">
-            <h1>{{ recipe.name }}</h1>
+            <h1 id="recipe-{{recipe.id}}-header">{{ recipe.name }}</h1>
             {%- if recipe.author.first_name and recipe.author.last_name -%}
             <h3>Written by {{ recipe.author.first_name }} {{ recipe.author.last_name }}</h3>
             {%- endif -%}

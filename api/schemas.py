@@ -71,8 +71,8 @@ class Token(BaseModel):
 
 class UserBase(BaseModel):
     email: EmailStr
-    first_name: Optional[str]
-    last_name: Optional[str]
+    first_name: str
+    last_name: str
 
 
 class AuthenticatedUser(UserBase):  # We only need to show the user their own token.

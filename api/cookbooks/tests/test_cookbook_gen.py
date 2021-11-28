@@ -11,22 +11,7 @@ from api.schemas import RecipeInDB, UserCreate
 
 
 class CookbookMakerAPITest(DBTestCase):
-    def create_and_login_user(self, email: Optional[str] = "test@example.com"):
-        # create a user
-        new_user = UserCreate(password="aBadPa$$w0rd!!", email=email)
-        created_user = create_user(db=self.db, user=new_user)
-
-        # Login in the user
-        response = self.client.post(
-            "/auth/token/",
-            data={
-                "username": new_user.email,
-                "password": new_user.password.get_secret_value(),
-            },
-        )
-        assert response.status_code == status.HTTP_200_OK, response.json()
-        return created_user
-
+    
     def test_generate_basic_cookbook(self):
         # SETUP: Generate a user and recipe.
         created_user = self.create_and_login_user()

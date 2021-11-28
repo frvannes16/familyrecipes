@@ -3,13 +3,13 @@
         <n-card>
             <n-tabs default-value="signin" size="large">
                 <n-tab-pane name="signin" tab="Sign in">
-                    <n-form>
-                        <n-form-item-row>
-                            <n-input v-model:value="signIn.email" placeholder="Email" />
+                    <n-form :model="signInFormVals" :rules="signInFormRules" ref="signInFormRef">
+                        <n-form-item-row path="email">
+                            <n-input v-model:value="signInFormVals.email" placeholder="Email" />
                         </n-form-item-row>
-                        <n-form-item-row>
+                        <n-form-item-row path="password">
                             <n-input
-                                v-model:value="signIn.password"
+                                v-model:value="signInFormVals.password"
                                 type="password"
                                 show-password-on="mousedown"
                                 placeholder="Password"
@@ -20,22 +20,32 @@
                     <n-button type="primary" block @click="onSignIn">Sign In</n-button>
                 </n-tab-pane>
                 <n-tab-pane name="signup" tab="Sign Up">
-                    <n-form>
-                        <n-form-item-row>
-                            <n-input v-model:value="signUp.email" placeholder="Email" />
+                    <n-form ref="signUpFormRef" :rules="signUpFormRules" :model="signUpFormVals">
+                        <n-form-item-row path="email">
+                            <n-input v-model:value="signUpFormVals.email" placeholder="Email" />
                         </n-form-item-row>
                         <n-form-item-row>
                             <n-input
-                                v-model:value="signUp.password"
+                                v-model:value="signUpFormVals.first_name"
+                                placeholder="First Name"
+                            />
+                            <n-input
+                                v-model:value="signUpFormVals.last_name"
+                                placeholder="Last Name"
+                            />
+                        </n-form-item-row>
+                        <n-form-item-row path="password">
+                            <n-input
+                                v-model:value="signUpFormVals.password"
                                 type="password"
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
                                 placeholder="Password"
                             />
                         </n-form-item-row>
-                        <n-form-item-row>
+                        <n-form-item-row path="confirmPassword">
                             <n-input
-                                v-model:value="signUp.confirmPassword"
+                                v-model:value="signUpFormVals.confirmPassword"
                                 type="password"
                                 show-password-on="mousedown"
                                 :min-length="MIN_PASSWORD_LENGTH"
@@ -72,15 +82,20 @@ export default defineComponent({
             router.push(to);  // TODO: unhandled promise
         };
 
-        const { signIn, onSignIn } = useSignIn();
-        const { signUp, onSignUp } = useSignUp();
+        const { formRef: signInFormRef, formRules: signInFormRules, formVals: signInFormVals, onSignIn } = useSignIn();
+        const { formRef: signUpFormRef, formRules: signUpFormRules, formVals: signUpFormVals, onSignUp } = useSignUp();
+
 
 
         return {
             MIN_PASSWORD_LENGTH,
-            signIn,
+            signInFormRef,
+            signInFormRules,
+            signInFormVals,
             onSignIn: onSignIn(navigateToUserPage),
-            signUp,
+            signUpFormRef,
+            signUpFormRules,
+            signUpFormVals,
             onSignUp: onSignUp(navigateToUserPage)
         }
     },

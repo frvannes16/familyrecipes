@@ -41,6 +41,8 @@ def generate_pdf_from_recipes(
     css_content = css_template.render(template_dir=template_dir)
 
     html = html_template.render(
+        cookbook_name="Franklin's Family Cookbook",
+        by_line="By Franklin van Nes",
         recipes=recipes, template_base_url=template_dir, css_content=css_content
     )
 

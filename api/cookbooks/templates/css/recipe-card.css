@@ -5,11 +5,23 @@
   margin: 100px 1cm 150px 1cm;
 }
 
+@page full {
+  margin: 0;
+  padding: 0;
+}
+
 html {
   background: #fff;
   font-family: Manrope, sans-serif;
   color: black;
   height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 @page {
@@ -72,4 +84,64 @@ html {
 
 .recipe {
   page-break-before: always;
+}
+
+.recipe h1 {
+  string-set: heading content();
+}
+
+
+#cover {
+  page-break-before: always;
+  page-break-after: always;
+  z-index: 0;
+  page: full;  /* Use the full page specs defined in "@page full" rule*/
+}
+
+#cover img {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  position: relative;
+  bottom: 0;
+  top:0;
+  left: 0;
+  right: 0;
+  object-fit: cover;
+}
+
+
+#cover h1,h2 {
+  z-index: 2;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  background: #fbc847;
+  color: #ffffff;
+  border: #696969 0.1cm solid;
+  border-left:0;
+  border-right: 0;
+}
+
+#cover h1 {
+  top: 20%;
+  padding: 0.2cm;
+}
+
+#cover h2 {
+  bottom: 10%;
+  padding: 0.1cm;
+}
+
+#contents {
+  page-break-before: always;
+}
+
+#contents a::after {
+  content: target-counter(attr(href), page);
+  float: right;
+}
+
+#contents ul {
+  list-style: none;
 }

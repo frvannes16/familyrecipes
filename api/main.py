@@ -1,4 +1,3 @@
-import logging
 from logging import config as logging_config
 from typing import List
 
@@ -87,12 +86,12 @@ async def update_recipe(
     recipe = crud.get_recipe(db, recipe_id)
     if not recipe:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Could not find recipe with id {recipe_id}",
         )
     if recipe.author_id != user.id:
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="You do not have access to this recipe.",
         )
 

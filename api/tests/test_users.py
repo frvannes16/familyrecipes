@@ -42,18 +42,13 @@ class UsersTestCase(DBTestCase):
             "email": "example@example.com",
         }, response.json()
 
-    def test_create_without_names(self):
+    def test_create_without_names_fails(self):
         data = {"email": "test@example.com", "password": "testPassword!123"}
 
         response = self.client.post("/auth/users/", json=data)
 
-        assert response.status_code == 200
-        assert response.json() == {
-            "id": 1,
-            "email": "test@example.com",
-            "first_name": None,
-            "last_name": None,
-        }
+        assert response.status_code == 422
+        
 
     def test_invalid_password_fails(self):
         data = {
