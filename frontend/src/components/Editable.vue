@@ -22,7 +22,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { NButton, NIcon } from "naive-ui";
 import { Check, EditRegular } from "@vicons/fa";
 
@@ -34,6 +34,7 @@ const EDIT_COMPLETE_EVENT = "editComplete";
 export default defineComponent({
     name: "Editable",
     components: { NButton, NIcon, Check, EditRegular },
+    emits: [EDIT_COMPLETE_EVENT],
     props: {
         height: {
             type: String,
@@ -46,27 +47,24 @@ export default defineComponent({
             default: "space-between",
         }
     },
-    data() {
+    setup(props, context) {
+        const isEditing = ref(false);
+        const toggleEditState = (newState: boolean) => {
+            isEditing.value = newState;
+        };
+
+        watch(isEditing, (editState) => {
+           if (editState == false)  {
+               context.emit(EDIT_COMPLETE_EVENT);
+           }
+        });
+
         return {
-            isEditing: false as Boolean,
-        }
-    },
-    methods: {
-        toggleEditState(newState: boolean) {
-            // called by the slots children when the user is done editing the field. 
-            // Usually called on blur events.
-            this.isEditing = newState;
+            isEditing,
+            toggleEditState
+        };
 
-        }
     },
-    watch: {
-        isEditing(newValue) {
-            if (newValue == false) {
-                this.$emit(EDIT_COMPLETE_EVENT);
-            }
-        }
-    }
-
 });
 </script>
 <style scoped>
