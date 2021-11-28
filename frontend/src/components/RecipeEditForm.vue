@@ -19,6 +19,7 @@
                 <h3>Ingredients</h3>
                 <editable
                     v-for="(ingredient, idx) in form.ingredients"
+                    ref="setIngredientRef"
                     height="35px"
                     class="editable"
                     @edit-complete="() => editIngredient(ingredient)"
@@ -65,7 +66,7 @@
     </n-form>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
 import Editable from "@/components/Editable.vue";
@@ -95,101 +96,116 @@ export default defineComponent({
             required: true
         }
     },
-    data() {
-        return {
-            form: {
-                name: "",
-                steps: [] as Array<Step>,
-                ingredients: [] as Array<Ingredient>
-            }
-        }
-    },
-    created() {
-        API.getSingleRecipeRecipesRecipeIdGet(this.recipeId).then(response => {
+    setup(props) {
+        const form = reactive({
+            name: "",
+            steps: [] as Array<Step>,
+            ingredients: [] as Array<Ingredient>
+        })
+
+        // Fetch recipe data
+        API.getSingleRecipeRecipesRecipeIdGet(props.recipeId).then(response => {
             if (response.status == 200) {
-                this.form.name = response.data.name;
-                this.form.steps = response.data.steps;
-                this.form.ingredients = response.data.ingredients;
+                form.name = response.data.name;
+                form.steps = response.data.steps;
+                form.ingredients = response.data.ingredients;
             }
         })
-    },
-    methods: {
-        updateRecipeName() {
-            const name = this.form.name;
-            API.updateRecipeRecipesRecipeIdPost(this.recipeId, { name }).then(response => {
+
+        const updateRecipeName = () => {
+            const name = form.name;
+            API.updateRecipeRecipesRecipeIdPost(props.recipeId, { name }).then(response => {
                 if (response.status == 200 && response.data?.name) {
-                    this.form.name = response.data.name;
+                    form.name = response.data.name;
                 }
             }).catch(console.error);
-        },
-        addStep() {
+        };
+
+        const addStep = () => {
             const content = "What next?";
             // update client data first for fast change.
-            this.form.steps.push({ content });
+            form.steps.push({ content });
             // update step via API
-            API.addStepRecipesRecipeIdStepsPost(this.recipeId, { content }).then(
+            API.addStepRecipesRecipeIdStepsPost(props.recipeId, { content }).then(
                 response => {
                     if (response.status == 200 && response.data) {
                         // update client steps with API response.
-                        this.form.steps = response.data;
+                        form.steps = response.data;
                     }
                 }
             )
-        },
-        addIngredient() {
+        };
+
+        const addIngredient = () => {
             const content = "New Ingredient";
             // update client data first.
-            this.form.ingredients.push({
+            form.ingredients.push({
                 content
             });
+            // Focus the new editable field.
+
             // update API
-            API.addIngredientRecipesRecipeIdIngredientsPost(this.recipeId, { content }).then(
+            API.addIngredientRecipesRecipeIdIngredientsPost(props.recipeId, { content }).then(
                 response => {
                     if (response.status == 200 && response.data) {
                         // update client ingredient model with API results.
-                        this.form.ingredients = response.data;
+                        form.ingredients = response.data;
                     }
                 }
             )
-        },
-        editIngredient(ingredient: Ingredient) {
+        };
+
+        const editIngredient = (ingredient: Ingredient) => {
             if (ingredient.id) {
                 API.updateIngredientRecipesIngredientsIngredientIdPost(
                     ingredient.id, { content: ingredient.content }).then(response => {
                         if (response.status == 200 && response.data) {
-                            this.form.ingredients = response.data;  // update client ingredient model with API results.
+                            form.ingredients = response.data;  // update client ingredient model with API results.
                         }
                     }
                     ).catch(console.error);
             } else {
                 console.error("trying to edit ingredient without ID.");
             }
-        },
-        editStep(step: Step) {
+        };
+
+        const editStep = (step: Step)  => {
             if (step.id) {
                 API.updateStepRecipesStepsStepIdPost(
                     step.id, { content: step.content }).then(response => {
                         if (response.status == 200 && response.data) {
-                            this.form.steps = response.data;  // update client step model with API results.
+                            form.steps = response.data;  // update client step model with API results.
                         }
                     }
                     ).catch(console.error);
             } else {
                 console.error("trying to edit step without ID.");
             }
-        },
-        updateStoredValue(valueType: STORED_VAL_TYPE, index: number, value: string) {
+        };
+        
+        const updateStoredValue = (valueType: STORED_VAL_TYPE, index: number, value: string) => {
             switch (valueType) {
                 case "INGREDIENT":
-                    this.form.ingredients[index].content = value;
+                    form.ingredients[index].content = value;
                     break;
                 case "STEP":
-                    this.form.steps[index].content = value;
+                    form.steps[index].content = value;
                 default:
                     break;
             }
         }
-    }
+
+
+        return {
+            form,
+            updateRecipeName,
+            addStep,
+            editStep,
+            addIngredient,
+            editIngredient,
+            updateStoredValue,
+        }
+    },
 });
 </script>
 
