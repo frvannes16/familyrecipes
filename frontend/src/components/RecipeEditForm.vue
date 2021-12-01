@@ -4,13 +4,14 @@
             <template v-slot:default="props">
                 <h2 class="recipe-name" @click="() => props.toggleEditState(true)">{{ form.name }}</h2>
             </template>
-            <template v-slot:edit-state="props">
+            <template v-slot:edit="{editor, toggleEditState}">
                 <n-input
                     @input="value => form.name = value"
                     :default-value="form.name"
                     class="recipe-name"
                     placeholder="Recipe Name"
-                    @blur="() => props.toggleEditState(false)"
+                    @blur="() => toggleEditState(false)"
+                    ref="editor"
                 ></n-input>
             </template>
         </editable>
@@ -19,17 +20,21 @@
                 <h3>Ingredients</h3>
                 <editable
                     v-for="(ingredient, idx) in form.ingredients"
-                    ref="setIngredientRef"
+                    :key="idx"
+                    :ref="addEditableRef"
                     height="35px"
                     class="editable"
                     @edit-complete="() => editIngredient(ingredient)"
                 >
-                    <template v-slot:edit-state="props">
+                    <template v-slot:edit="props">
                         <n-input
                             @input="value => updateStoredValue('INGREDIENT', idx, value)"
                             @blur="() => props.toggleEditState(false)"
                             :default-value="ingredient.content"
+                            :autofocus="true"
+                            :passively-activated="true"
                             placeholder="1 3/4 tsp cayenne powder"
+                            ref="props.editor"
                         ></n-input>
                     </template>
                     <template v-slot:default="props">
@@ -45,14 +50,16 @@
                         <strong>Step {{ idx + 1 }}</strong>
                     </p>
                     <editable @edit-complete="() => editStep(step)" class="editable">
-                        <template v-slot:edit-state="props">
+                        <template v-slot:edit="props">
                             <n-input
                                 @input="value => updateStoredValue('STEP', idx, value)"
                                 @blur="props.toggleEditState(false)"
                                 @change="props.toggleEditState(false)"
+                                :autofocus="true"
                                 :default-value="step.content"
                                 type="textarea"
                                 placeholder="Details"
+                                ref="props.editor"
                             ></n-input>
                         </template>
                         <template v-slot:default="props">
@@ -66,7 +73,7 @@
     </n-form>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, ref, onBeforeUpdate } from "vue";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
 import Editable from "@/components/Editable.vue";
@@ -100,8 +107,21 @@ export default defineComponent({
         const form = reactive({
             name: "",
             steps: [] as Array<Step>,
-            ingredients: [] as Array<Ingredient>
-        })
+            ingredients: [] as Array<Ingredient>,
+            focusedIngredientIdx: null as null | Number
+        });
+
+        const editableRefs = ref([]);
+
+        const addEditableRef = (el) => {
+            if (el) {
+                editableRefs.value.push(el);
+            }
+        };
+
+        onBeforeUpdate(() => {
+            editableRefs.value = [];
+        });
 
         // Fetch recipe data
         API.getSingleRecipeRecipesRecipeIdGet(props.recipeId).then(response => {
@@ -142,7 +162,6 @@ export default defineComponent({
             form.ingredients.push({
                 content
             });
-            // Focus the new editable field.
 
             // update API
             API.addIngredientRecipesRecipeIdIngredientsPost(props.recipeId, { content }).then(
@@ -152,7 +171,7 @@ export default defineComponent({
                         form.ingredients = response.data;
                     }
                 }
-            )
+            );
         };
 
         const editIngredient = (ingredient: Ingredient) => {
@@ -169,7 +188,7 @@ export default defineComponent({
             }
         };
 
-        const editStep = (step: Step)  => {
+        const editStep = (step: Step) => {
             if (step.id) {
                 API.updateStepRecipesStepsStepIdPost(
                     step.id, { content: step.content }).then(response => {
@@ -182,7 +201,7 @@ export default defineComponent({
                 console.error("trying to edit step without ID.");
             }
         };
-        
+
         const updateStoredValue = (valueType: STORED_VAL_TYPE, index: number, value: string) => {
             switch (valueType) {
                 case "INGREDIENT":
@@ -195,7 +214,6 @@ export default defineComponent({
             }
         }
 
-
         return {
             form,
             updateRecipeName,
@@ -204,6 +222,8 @@ export default defineComponent({
             addIngredient,
             editIngredient,
             updateStoredValue,
+            editableRefs,
+            addEditableRef
         }
     },
 });

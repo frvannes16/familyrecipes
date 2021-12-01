@@ -2,14 +2,15 @@
     <div class="editable-wrapper" :style="`height: ${height}; justify-content: ${justifyContent}`">
         <div class="slot">
             <slot
-                name="edit-state"
+                name="edit"
                 v-if="isEditing"
-                @blur.capture="isEditing = false"
+                @focusout.capture="() => toggleEditState(false)"
                 :toggleEditState="toggleEditState"
+                :editor="editor"
             ></slot>
             <slot v-else :toggleEditState="toggleEditState"></slot>
         </div>
-        <div @click="isEditing = !isEditing" class="button">
+        <div @click="() => toggleEditState(!isEditing)" class="button">
             <n-button circle>
                 <template #icon>
                     <n-icon>
@@ -22,19 +23,21 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, defineExpose, ref, watch, onBeforeUnmount } from "vue";
 import { NButton, NIcon } from "naive-ui";
 import { Check, EditRegular } from "@vicons/fa";
+import useEditGroup from "@/composables/useEditGroup";
 
 
 const EDIT_COMPLETE_EVENT = "editComplete";
+const EDIT_START_EVENT = "editStart";
 
 // This component allows any field to have two states, a preview state and an edit state.
 // These two states make it easier to imply that a field can be edited and save on click away.
 export default defineComponent({
     name: "Editable",
     components: { NButton, NIcon, Check, EditRegular },
-    emits: [EDIT_COMPLETE_EVENT],
+    emits: [EDIT_START_EVENT, EDIT_COMPLETE_EVENT],
     props: {
         height: {
             type: String,
@@ -49,19 +52,34 @@ export default defineComponent({
     },
     setup(props, context) {
         const isEditing = ref(false);
+        const editor = ref(null);
+
+        const registerCallback = useEditGroup();  // Ensure that only one editable is in edit state at a time.
+        const {deregisterCallback, claimFocus, relinquishFocus} = registerCallback(() => {toggleEditState(false)});
+        onBeforeUnmount(deregisterCallback);
+
         const toggleEditState = (newState: boolean) => {
             isEditing.value = newState;
+            if (newState == true) {
+                claimFocus(); // Ensures other editables hide their edit slot.
+                // focus on the input
+                if (editor.value) {
+                    editor.value.focus()
+                }
+            } else {
+                relinquishFocus();
+            }
         };
 
         watch(isEditing, (editState) => {
-           if (editState == false)  {
-               context.emit(EDIT_COMPLETE_EVENT);
-           }
+            context.emit(editState ? EDIT_START_EVENT : EDIT_COMPLETE_EVENT);
         });
+        defineExpose({editor})
 
         return {
             isEditing,
-            toggleEditState
+            toggleEditState,
+            editor
         };
 
     },
