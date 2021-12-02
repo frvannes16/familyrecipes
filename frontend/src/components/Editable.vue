@@ -6,7 +6,6 @@
                 v-if="isEditing"
                 @focusout.capture="() => toggleEditState(false)"
                 :toggleEditState="toggleEditState"
-                :editor="editor"
             ></slot>
             <slot v-else :toggleEditState="toggleEditState"></slot>
         </div>
@@ -52,7 +51,6 @@ export default defineComponent({
     },
     setup(props, context) {
         const isEditing = ref(false);
-        const editor = ref(null);
 
         const registerCallback = useEditGroup();  // Ensure that only one editable is in edit state at a time.
         const {deregisterCallback, claimFocus, relinquishFocus} = registerCallback(() => {toggleEditState(false)});
@@ -62,10 +60,6 @@ export default defineComponent({
             isEditing.value = newState;
             if (newState == true) {
                 claimFocus(); // Ensures other editables hide their edit slot.
-                // focus on the input
-                if (editor.value) {
-                    editor.value.focus()
-                }
             } else {
                 relinquishFocus();
             }
@@ -74,12 +68,10 @@ export default defineComponent({
         watch(isEditing, (editState) => {
             context.emit(editState ? EDIT_START_EVENT : EDIT_COMPLETE_EVENT);
         });
-        defineExpose({editor})
 
         return {
             isEditing,
             toggleEditState,
-            editor
         };
 
     },

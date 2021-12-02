@@ -4,14 +4,13 @@
             <template v-slot:default="props">
                 <h2 class="recipe-name" @click="() => props.toggleEditState(true)">{{ form.name }}</h2>
             </template>
-            <template v-slot:edit="{editor, toggleEditState}">
+            <template v-slot:edit="{ toggleEditState }">
                 <n-input
                     @input="value => form.name = value"
                     :default-value="form.name"
                     class="recipe-name"
                     placeholder="Recipe Name"
                     @blur="() => toggleEditState(false)"
-                    ref="editor"
                 ></n-input>
             </template>
         </editable>
@@ -21,24 +20,22 @@
                 <editable
                     v-for="(ingredient, idx) in form.ingredients"
                     :key="idx"
-                    :ref="addEditableRef"
                     height="35px"
                     class="editable"
                     @edit-complete="() => editIngredient(ingredient)"
                 >
-                    <template v-slot:edit="props">
+                    <template v-slot:edit="{ toggleEditState }">
                         <n-input
                             @input="value => updateStoredValue('INGREDIENT', idx, value)"
-                            @blur="() => props.toggleEditState(false)"
+                            @blur="() => toggleEditState(false)"
                             :default-value="ingredient.content"
                             :autofocus="true"
                             :passively-activated="true"
                             placeholder="1 3/4 tsp cayenne powder"
-                            ref="props.editor"
                         ></n-input>
                     </template>
-                    <template v-slot:default="props">
-                        <p @click="() => props.toggleEditState(true)">{{ ingredient.content }}</p>
+                    <template v-slot:default="{ toggleEditState }">
+                        <p @click="() => toggleEditState(true)">{{ ingredient.content }}</p>
                     </template>
                 </editable>
                 <n-button @click="addIngredient">+ Add Ingredient</n-button>
@@ -59,7 +56,6 @@
                                 :default-value="step.content"
                                 type="textarea"
                                 placeholder="Details"
-                                ref="props.editor"
                             ></n-input>
                         </template>
                         <template v-slot:default="props">
@@ -73,7 +69,7 @@
     </n-form>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, onBeforeUpdate } from "vue";
+import { defineComponent, reactive } from "vue";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
 import Editable from "@/components/Editable.vue";
@@ -111,17 +107,6 @@ export default defineComponent({
             focusedIngredientIdx: null as null | Number
         });
 
-        const editableRefs = ref([]);
-
-        const addEditableRef = (el) => {
-            if (el) {
-                editableRefs.value.push(el);
-            }
-        };
-
-        onBeforeUpdate(() => {
-            editableRefs.value = [];
-        });
 
         // Fetch recipe data
         API.getSingleRecipeRecipesRecipeIdGet(props.recipeId).then(response => {
@@ -222,8 +207,6 @@ export default defineComponent({
             addIngredient,
             editIngredient,
             updateStoredValue,
-            editableRefs,
-            addEditableRef
         }
     },
 });
