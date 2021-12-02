@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
 
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 from argon2 import PasswordHasher
 
@@ -122,6 +123,24 @@ def update_ingredient(
     db.commit()
 
 
+def delete_ingredient(db: Session, ingredient: models.RecipeIngredient):
+    # Delete the ingredient and shift the positions of the ingredient
+    # with a higher position down one.
+    empty_position = ingredient.position
+    recipe_id = ingredient.recipe_id
+    db.delete(ingredient)    
+
+    (  # Decrement the position of any procededing ingredients.
+        db.query(models.RecipeIngredient)
+        .filter(models.RecipeIngredient.recipe_id == recipe_id)
+        .filter(models.RecipeIngredient.position > empty_position)
+        .update(
+            {models.RecipeIngredient.position: models.RecipeIngredient.position - 1}
+        )
+    )
+    db.commit()
+
+
 def append_recipe_ingredient(
     db: Session, recipe_id: int, ingredient: schemas.RecipeIngredientCreate
 ):
@@ -146,6 +165,25 @@ def update_step(db: Session, step: models.RecipeStep, edit: schemas.RecipeStepEd
     setattr(step, "content", edit.content)
     db.commit()
     return step
+
+
+def delete_step(db: Session, step: models.RecipeStep):
+    empty_position = step.position
+    recipe_id = step.recipe_id
+    
+    db.delete(step)    
+
+    (  # Decrement the position of any procededing steps.
+        db.query(models.RecipeStep)
+        .filter(models.RecipeStep.recipe_id == recipe_id)
+        .filter(models.RecipeStep.position > empty_position)
+        .update(
+            {models.RecipeStep.position: models.RecipeStep.position - 1}
+        )
+    )
+    db.commit()
+    db.delete(step)
+    db.commit()
 
 
 def append_recipe_step(db: Session, recipe_id: int, step: schemas.RecipeStepCreate):

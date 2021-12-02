@@ -1,8 +1,8 @@
 <template>
     <n-form size="large">
         <editable justify-content="flex-start" @edit-complete="updateRecipeName">
-            <template v-slot:default="props">
-                <h2 class="recipe-name" @click="() => props.toggleEditState(true)">{{ form.name }}</h2>
+            <template v-slot:default="{ toggleEditState }">
+                <h2 class="recipe-name" @click="() => toggleEditState(true)">{{ form.name }}</h2>
             </template>
             <template v-slot:edit="{ toggleEditState }">
                 <n-input
@@ -20,8 +20,10 @@
                 <editable
                     v-for="(ingredient, idx) in form.ingredients"
                     :key="idx"
-                    height="35px"
+                    minHeight="35px"
                     class="editable"
+                    :delete-button="true"
+                    @delete="() => deleteIngredient(ingredient)"
                     @edit-complete="() => editIngredient(ingredient)"
                 >
                     <template v-slot:edit="{ toggleEditState }">
@@ -46,13 +48,17 @@
                     <p>
                         <strong>Step {{ idx + 1 }}</strong>
                     </p>
-                    <editable @edit-complete="() => editStep(step)" class="editable">
+                    <editable
+                        @edit-complete="() => editStep(step)"
+                        :delete-button="true"
+                        @delete="() => deleteStep(step)"
+                        class="editable"
+                    >
                         <template v-slot:edit="props">
                             <n-input
                                 @input="value => updateStoredValue('STEP', idx, value)"
                                 @blur="props.toggleEditState(false)"
                                 @change="props.toggleEditState(false)"
-                                :autofocus="true"
                                 :default-value="step.content"
                                 type="textarea"
                                 placeholder="Details"
@@ -70,7 +76,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
-import { NForm, NFormItem, NInput, NButton } from "naive-ui";
+import { NForm, NFormItem, NInput, NButton, useMessage } from "naive-ui";
 import { axiosConfigFactory, DefaultApiFactory } from "@/api";  // Typescript response interface
 import Editable from "@/components/Editable.vue";
 
@@ -100,11 +106,12 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const message = useMessage();
+
         const form = reactive({
             name: "",
             steps: [] as Array<Step>,
             ingredients: [] as Array<Ingredient>,
-            focusedIngredientIdx: null as null | Number
         });
 
 
@@ -173,6 +180,18 @@ export default defineComponent({
             }
         };
 
+        const deleteIngredient = (ingredient: Ingredient) => {
+            if (ingredient.id) {
+                API.deleteIngredientRecipesIngredientsIngredientIdDelete(ingredient.id).then(response => {
+                    if (response.status == 200 && response.data) {
+                        form.ingredients = response.data;
+                    }
+                })
+            } else {
+                message.error("Could not delete ingredient. Wait for ingredient to save before deleting it.", { duration: 6000 });
+            }
+        }
+
         const editStep = (step: Step) => {
             if (step.id) {
                 API.updateStepRecipesStepsStepIdPost(
@@ -181,9 +200,29 @@ export default defineComponent({
                             form.steps = response.data;  // update client step model with API results.
                         }
                     }
-                    ).catch(console.error);
+                    ).catch(error => {
+                        console.error(error);
+                        message.error("Could not edit step. Please try again.");
+                    });
             } else {
-                console.error("trying to edit step without ID.");
+                message.error("Could not edit step. Please try again.");
+            }
+        };
+
+        const deleteStep = (step: Step) => {
+            if (step.id) {
+                API.deleteStepRecipesStepsStepIdDelete(step.id).then(response => {
+                    if (response.status == 200 && response.data) {
+                        form.steps = response.data;
+                    } else {
+                        message.error("Could not delete step. Please try again.");
+                    }
+                }).catch(error => {
+                    console.error(error);
+                    message.error("Could not delete step. Please try again.");
+                })
+            } else {
+                message.error("Could not delete step. Please try again.")
             }
         };
 
@@ -204,8 +243,10 @@ export default defineComponent({
             updateRecipeName,
             addStep,
             editStep,
+            deleteStep,
             addIngredient,
             editIngredient,
+            deleteIngredient,
             updateStoredValue,
         }
     },
@@ -229,6 +270,9 @@ export default defineComponent({
 
 .ingredients-wrapper .editable {
     margin: 12px 0;
+    padding: 4px 12px;
+    background: #f0f0ff;
+    border-radius: 8px;
 }
 
 .steps-wrapper {
@@ -238,6 +282,9 @@ export default defineComponent({
 
 .steps-wrapper .editable {
     margin: 12px 0;
-    padding-left: 12px;
+    padding: 0 12px;
+    background: #f0f0ff;
+    border-radius: 8px;
+
 }
 </style>

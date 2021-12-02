@@ -479,6 +479,52 @@
                         "OAuth2PasswordBearerWithCookie": []
                     }
                 ]
+            },
+            "delete": {
+                "summary": "Delete Ingredient",
+                "operationId": "delete_ingredient_recipes_ingredients__ingredient_id___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Ingredient Id",
+                            "type": "integer"
+                        },
+                        "name": "ingredient_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Delete Ingredient Recipes Ingredients  Ingredient Id   Delete",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecipeIngredientInDB"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
             }
         },
         "/recipes/{recipe_id}/ingredients/": {
@@ -571,6 +617,52 @@
                             "application/json": {
                                 "schema": {
                                     "title": "Response Update Step Recipes Steps  Step Id   Post",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RecipeStepInDB"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "OAuth2PasswordBearerWithCookie": []
+                    }
+                ]
+            },
+            "delete": {
+                "summary": "Delete Step",
+                "operationId": "delete_step_recipes_steps__step_id___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Step Id",
+                            "type": "integer"
+                        },
+                        "name": "step_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Delete Step Recipes Steps  Step Id   Delete",
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/RecipeStepInDB"
@@ -744,6 +836,8 @@
                 "title": "AuthenticatedUser",
                 "required": [
                     "email",
+                    "first_name",
+                    "last_name",
                     "id",
                     "token",
                     "role"
@@ -1098,6 +1192,8 @@
                 "title": "User",
                 "required": [
                     "email",
+                    "first_name",
+                    "last_name",
                     "id"
                 ],
                 "type": "object",
@@ -1125,6 +1221,8 @@
                 "title": "UserCreate",
                 "required": [
                     "email",
+                    "first_name",
+                    "last_name",
                     "password"
                 ],
                 "type": "object",

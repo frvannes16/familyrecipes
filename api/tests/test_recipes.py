@@ -121,7 +121,9 @@ class GetRecipesTest(DBTestCase):
         self.create_test_recipes(created_user.id, 15)
 
         # Create a secondary user and create 10 recipes belonging to them.
-        created_other_user = self.create_user(password="aBadPa$$w0rd!!", email="test2@example.com")
+        created_other_user = self.create_user(
+            password="aBadPa$$w0rd!!", email="test2@example.com"
+        )
         self.create_test_recipes(created_other_user.id, 10)
 
         # Retrieve all recipes. There should be 25 in total
@@ -439,6 +441,54 @@ class IngredientsTest(DBTestCase):
             response.status_code, status.HTTP_403_FORBIDDEN, response.json()
         )
 
+    def test_delete_ingredient(self):
+        # Create a recipe with ingredients
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        ingredients = [
+            models.RecipeIngredient(
+                position=0,
+                content="4 cloves garlic",
+                recipe_id=recipe.id,
+            ),
+            models.RecipeIngredient(
+                position=1, content="1 can black beans", recipe_id=recipe.id
+            ),
+            models.RecipeIngredient(
+                position=2, content="1 can diced tomatoes", recipe_id=recipe.id
+            ),
+            models.RecipeIngredient(
+                position=3, content="2 tbsp cocoa powder", recipe_id=recipe.id
+            ),
+        ]
+        self.db.add_all(ingredients)
+        self.db.commit()
+
+        response = self.client.get(
+            f"/recipes/{recipe.id}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        positions = [ing['position'] for ing in response.json()['ingredients']]
+        self.assertEqual(positions, [0, 1, 2, 3])
+
+        ingredient_id_to_delete = response.json()['ingredients'][1]['id']
+
+        # Remove the second ingredient and expect the positions to collapse into place.
+        response = self.client.delete(f"/recipes/ingredients/{ingredient_id_to_delete}/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        positions = [ing['position'] for ing in response.json()]
+        self.assertEqual(positions, [0, 1, 2])
+
+        # Remove the first and last ingredient without error.
+        response_a = self.client.delete(f"/recipes/ingredients/{response.json()[0]['id']}/")
+        response_b = self.client.delete(f"/recipes/ingredients/{response.json()[-1]['id']}/")
+        self.assertEqual(response_a.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_b.status_code, status.HTTP_200_OK)
 
 class StepsTest(DBTestCase):
     def setUp(self):
@@ -563,3 +613,52 @@ class StepsTest(DBTestCase):
         self.assertEqual(
             response.status_code, status.HTTP_403_FORBIDDEN, response.json()
         )
+
+    def test_delete_step(self):
+        # Create a recipe with steps
+        recipe = models.Recipe(
+            name="Chili", author_id=self.user.id, created_at=datetime.datetime.utcnow()
+        )
+        self.db.add(recipe)
+        self.db.commit()
+
+        steps = [
+            models.RecipeStep(
+                position=0,
+                content="chop garlic",
+                recipe_id=recipe.id,
+            ),
+            models.RecipeStep(
+                position=1, content="chop onions", recipe_id=recipe.id
+            ),
+            models.RecipeStep(
+                position=2, content="cook onions", recipe_id=recipe.id
+            ),
+            models.RecipeStep(
+                position=3, content="cook garlic", recipe_id=recipe.id
+            ),
+        ]
+        self.db.add_all(steps)
+        self.db.commit()
+
+        response = self.client.get(
+            f"/recipes/{recipe.id}/"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        positions = [ing['position'] for ing in response.json()['steps']]
+        self.assertEqual(positions, [0, 1, 2, 3])
+
+        step_id_to_delete = response.json()['steps'][1]['id']
+
+        # Remove the second step and expect the positions to collapse into place.
+        response = self.client.delete(f"/recipes/steps/{step_id_to_delete}/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        positions = [ing['position'] for ing in response.json()]
+        self.assertEqual(positions, [0, 1, 2])
+
+        # Remove the first and last step without error.
+        response_a = self.client.delete(f"/recipes/steps/{response.json()[0]['id']}/")
+        response_b = self.client.delete(f"/recipes/steps/{response.json()[-1]['id']}/")
+        self.assertEqual(response_a.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_b.status_code, status.HTTP_200_OK)

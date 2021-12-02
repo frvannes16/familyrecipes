@@ -38,13 +38,13 @@ export interface AuthenticatedUser {
      * @type {string}
      * @memberof AuthenticatedUser
      */
-    first_name?: string;
+    first_name: string;
     /**
      * 
      * @type {string}
      * @memberof AuthenticatedUser
      */
-    last_name?: string;
+    last_name: string;
     /**
      * 
      * @type {number}
@@ -379,13 +379,13 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    first_name?: string;
+    first_name: string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    last_name?: string;
+    last_name: string;
     /**
      * 
      * @type {number}
@@ -410,13 +410,13 @@ export interface UserCreate {
      * @type {string}
      * @memberof UserCreate
      */
-    first_name?: string;
+    first_name: string;
     /**
      * 
      * @type {string}
      * @memberof UserCreate
      */
-    last_name?: string;
+    last_name: string;
     /**
      * 
      * @type {string}
@@ -801,6 +801,82 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(recipeCreate, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete Ingredient
+         * @param {number} ingredientId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteIngredientRecipesIngredientsIngredientIdDelete: async (ingredientId: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ingredientId' is not null or undefined
+            assertParamExists('deleteIngredientRecipesIngredientsIngredientIdDelete', 'ingredientId', ingredientId)
+            const localVarPath = `/recipes/ingredients/{ingredient_id}/`
+                .replace(`{${"ingredient_id"}}`, encodeURIComponent(String(ingredientId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete Step
+         * @param {number} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteStepRecipesStepsStepIdDelete: async (stepId: number, options: any = {}): Promise<RequestArgs> => {
+            // verify required parameter 'stepId' is not null or undefined
+            assertParamExists('deleteStepRecipesStepsStepIdDelete', 'stepId', stepId)
+            const localVarPath = `/recipes/steps/{step_id}/`
+                .replace(`{${"step_id"}}`, encodeURIComponent(String(stepId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication OAuth2PasswordBearerWithCookie required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "OAuth2PasswordBearerWithCookie", [], configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1290,6 +1366,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Delete Ingredient
+         * @param {number} ingredientId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RecipeIngredientInDB>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete Step
+         * @param {number} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteStepRecipesStepsStepIdDelete(stepId: number, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<RecipeStepInDB>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteStepRecipesStepsStepIdDelete(stepId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Generate Recipe Pdf
          * @param {number} recipeId 
          * @param {*} [options] Override http request option.
@@ -1457,6 +1555,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Delete Ingredient
+         * @param {number} ingredientId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId: number, options?: any): AxiosPromise<Array<RecipeIngredientInDB>> {
+            return localVarFp.deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete Step
+         * @param {number} stepId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteStepRecipesStepsStepIdDelete(stepId: number, options?: any): AxiosPromise<Array<RecipeStepInDB>> {
+            return localVarFp.deleteStepRecipesStepsStepIdDelete(stepId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Generate Recipe Pdf
          * @param {number} recipeId 
          * @param {*} [options] Override http request option.
@@ -1615,6 +1733,30 @@ export class DefaultApi extends BaseAPI {
      */
     public createUserRecipeRecipesPost(recipeCreate: RecipeCreate, options?: any) {
         return DefaultApiFp(this.configuration).createUserRecipeRecipesPost(recipeCreate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete Ingredient
+     * @param {number} ingredientId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId: number, options?: any) {
+        return DefaultApiFp(this.configuration).deleteIngredientRecipesIngredientsIngredientIdDelete(ingredientId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete Step
+     * @param {number} stepId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteStepRecipesStepsStepIdDelete(stepId: number, options?: any) {
+        return DefaultApiFp(this.configuration).deleteStepRecipesStepsStepIdDelete(stepId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

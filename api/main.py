@@ -217,6 +217,38 @@ async def update_ingredient(
     ]
 
 
+
+@app.delete(
+    "/recipes/ingredients/{ingredient_id}/",
+    response_model=List[schemas.RecipeIngredientInDB],
+)
+async def delete_ingredient(
+    ingredient_id: int,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get ingredient or 404
+    ingredient = crud.get_ingredient(db, ingredient_id)
+    if not ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="ingredient does not exist"
+        )
+
+    if ingredient.recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ingredient does not belong to user",
+        )
+
+    # Delete the ingredient
+    crud.delete_ingredient(db, ingredient)
+    # Return all of the recipe's ingredients
+    return [
+        schemas.RecipeIngredientInDB.from_orm(ingredient)
+        for ingredient in ingredient.recipe.ingredients
+    ]
+
+
 @app.post(
     "/recipes/{recipe_id}/ingredients/",
     response_model=List[schemas.RecipeIngredientInDB],
@@ -277,6 +309,32 @@ async def update_step(
     # Edit the step
     crud.update_step(db, step, edit_step)
     return [schemas.RecipeStepInDB.from_orm(step) for step in step.recipe.steps]
+
+
+
+@app.delete("/recipes/steps/{step_id}/", response_model=List[schemas.RecipeStepInDB])
+async def delete_step(
+    step_id: int,
+    user: schemas.AuthenticatedUser = Depends(auth.get_current_user),
+    db: Session = Depends(get_db),
+):
+    # get step or 404
+    step = crud.get_step(db, step_id)
+    if not step:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="step does not exist"
+        )
+
+    if step.recipe.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="step does not belong to user",
+        )
+
+    # Delete the step
+    crud.delete_step(db, step)
+    return [schemas.RecipeStepInDB.from_orm(step) for step in step.recipe.steps]
+
 
 
 @app.post(
