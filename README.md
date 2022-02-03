@@ -30,7 +30,7 @@ In addition to creating a useful tool for my relatives, I created Family Recipes
 
 ![Featured Languages, and Libraries](/examples/feature-software.png)
 
-#### Project Outcome
+## Project Outcome
 
 While much of this project is still ongoing, I was able to create a working app and learn everything I wanted to. Here is what I discovered in the process of making Family Recipes:
 
