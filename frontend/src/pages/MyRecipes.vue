@@ -1,7 +1,10 @@
 <template>
     <div class="container">
-        <progress-bar class="progress-bar"></progress-bar>
+        <!-- <progress-bar class="progress-bar"></progress-bar> -->
         <h1>My Recipes</h1>
+        <p
+            v-if="recipes == undefined || recipes?.data.length == 0"
+        >No recipes yet... Create your first recipe to get started!</p>
         <n-space>
             <recipe-card
                 v-if="recipes"
@@ -10,12 +13,15 @@
                 @click="() => showSelectedRecipe(recipe.id)"
             ></recipe-card>
         </n-space>
-        <n-button type="primary" size="large" @click="createNewRecipe" class="btn">Create Recipe</n-button>
+        <n-button type="primary" size="large" @click="createNewRecipe" class="btn">Create New Recipe</n-button>
     </div>
     <div class="selected-recipe" v-if="!!selectedRecipe">
         <view-recipe :recipe="selectedRecipe"></view-recipe>
     </div>
-    <n-button v-if="recipes" @click="generateCookbook">Make Cookbook</n-button>
+    <n-button
+        v-if="recipes?.result_count && recipes.result_count > 0"
+        @click="generateCookbook"
+    >Make Cookbook</n-button>
 </template>
 
 <script lang="ts">
@@ -25,7 +31,7 @@ import { NButton, NSpace, useMessage } from "naive-ui";
 import { PaginatedRecipes, RecipeInDB, axiosConfigFactory, DefaultApiFactory, Configuration } from "@/api";  // Typescript response interface
 import RecipeCard from "@/components/RecipeCard.vue";
 import ViewRecipe from "@/components/ViewRecipe.vue";
-import ProgressBar from "@/components/ProgressBar.vue";
+// import ProgressBar from "@/components/ProgressBar.vue";  // Temporarily disabled.
 import useUserInfo from "@/composables/useUserInfo";
 import downloadPdfInBackground from "@/utils/pdf";
 
@@ -33,7 +39,7 @@ import downloadPdfInBackground from "@/utils/pdf";
 
 export default defineComponent({
     name: "MyRecipes",
-    components: { RecipeCard, ViewRecipe, NButton, NSpace, ProgressBar },
+    components: { RecipeCard, ViewRecipe, NButton, NSpace },
     setup() {
         const API = DefaultApiFactory(undefined, axiosConfigFactory().basePath);
         const PDF_API = DefaultApiFactory(new Configuration({ baseOptions: { responseType: 'blob' } }), axiosConfigFactory().basePath);
