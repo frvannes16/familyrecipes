@@ -42,11 +42,11 @@ Another benefit of FastAPI is the design of the `Depends()` system which encoura
 
 The primary drawback of FastAPI was that it is no way near as featureful as Django. I had to implement my own authentication and authorization, which is always scary and leaves you vulnerable to attack. I also had to import an ORM library; I used sqlalchemy, which, while good, falls short of the Django ORM. The sqlalchemy documentation is also of lower quality than the Django ORM.
 
-I look forward to using FastAPI more as it matures and authentication becomes easier. FastAPI's speed and embrace of Python typing renders Flask obsolete, but it's primary use for me will be for creating lightweight APIs. I expect to use FastAPI more as auth and ORM become easier to integrate by 3rd party libraries.
+I look forward to using FastAPI more as it matures and authentication becomes easier. FastAPI's speed and embrace of Python typing renders Flask obsolete, but its primary use for me will be for creating lightweight APIs. I expect to use FastAPI more as auth and ORM become easier to integrate by 3rd party libraries.
 
 _Question: Vue 3: Why is it better than Vue 2?_
 
-Findings: Vue 3 brings excellent Typescript support and the composition API as its primary offerings. The composition API took some learning to understand, but once I had a handle of it I was able to convert all components over to the composition API with relative easy and enjoyment. While this is a small project, I was still able to abstract code into `composables` that could be re-used. The composition API improved the readability of my code by allowing me to bunch similar logic together. It also made it easier to move code around!
+Findings: Vue 3 brings excellent Typescript support and the composition API as its primary offerings. The composition API took some learning to understand, but once I had a handle of it I was able to convert all components over to the composition API with relative ease and enjoyment. While this is a small project, I was still able to abstract code into `composables` that could be re-used. The composition API improved the readability of my code by allowing me to bunch similar logic together. It also made it easier to move code around!
 
 Vue 3's Typescript support was so good, that I cannot remember running into one incompatibilty or any level of weirdness while using Typescript. I was able to use TS everywhere as a result. The use of Typescript was encouraged by my use of API endpoint method generation, which allowed me to really lean into Typescript and to better understand the contents of the objects that the API returned.
 
