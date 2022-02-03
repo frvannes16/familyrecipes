@@ -9,7 +9,7 @@ To run this project yourself, follow the instructions in the "Getting Started" s
 ![Recipe Editor](/examples/recipe-creator.png)
 **Recipe Editor**
 
-![Store your recipes](/examples/view-recipes.png)
+![Store your recipes](/examples/view-recipes-big.png)
 **Store your recipes**
 
 **Turn your recipes into fully-featured, print ready cookbooks.**
