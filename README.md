@@ -28,7 +28,7 @@ In addition to creating a useful tool for my relatives, I created Family Recipes
 
 #### Featured Languages and Libraries
 
-![Featured Languages, and Libraries](/examples/featured-software.png)
+![Featured Languages, and Libraries](/examples/feature-software.png)
 
 #### Project Outcome
 
