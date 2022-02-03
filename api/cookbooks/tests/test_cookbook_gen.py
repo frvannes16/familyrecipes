@@ -11,7 +11,6 @@ from api.schemas import RecipeInDB, UserCreate
 
 
 class CookbookMakerAPITest(DBTestCase):
-    
     def test_generate_basic_cookbook(self):
         # SETUP: Generate a user and recipe.
         created_user = self.create_and_login_user()
@@ -144,7 +143,7 @@ class CookbookMakerAPITest(DBTestCase):
 
         # Test that there are bytes returned.
         # We don't have a good way of testing the file contents
-        pdf_bytes = generate_pdf_from_recipes(recipes)
+        pdf_bytes = generate_pdf_from_recipes(recipe.author, recipes)
 
         self.assertIsNotNone(pdf_bytes)
         self.assertIsInstance(pdf_bytes, bytes)

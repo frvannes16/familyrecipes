@@ -117,7 +117,7 @@ async def generate_recipe_pdf(
             detail="You do not have access to this recipe.",
         )
     recipe_list = [schemas.RecipeInDB.from_orm(recipe)]
-    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(recipe_list)
+    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(recipe.author, recipe_list)
     response = Response(content=pdf_bytes, media_type="application/pdf")
     response.headers.update(
         {"Content-Disposition": "attachment", "filename": "my-recipe.pdf"}
@@ -154,7 +154,7 @@ async def generate_user_recipes_pdf(
     if not author:
         raise Exception("Could not retrieve user with known ID. Weird.")
     recipe_list = [schemas.RecipeInDB.from_orm(recipe) for recipe in author.recipes]
-    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(recipe_list)
+    pdf_bytes = cookbook_generator.generate_pdf_from_recipes(author, recipe_list)
     response = Response(content=pdf_bytes, media_type="application/pdf")
     response.headers.update(
         {"Content-Disposition": "attachment", "filename": "my-recipes.pdf"}
@@ -215,7 +215,6 @@ async def update_ingredient(
         schemas.RecipeIngredientInDB.from_orm(ingredient)
         for ingredient in ingredient.recipe.ingredients
     ]
-
 
 
 @app.delete(
@@ -311,7 +310,6 @@ async def update_step(
     return [schemas.RecipeStepInDB.from_orm(step) for step in step.recipe.steps]
 
 
-
 @app.delete("/recipes/steps/{step_id}/", response_model=List[schemas.RecipeStepInDB])
 async def delete_step(
     step_id: int,
@@ -334,7 +332,6 @@ async def delete_step(
     # Delete the step
     crud.delete_step(db, step)
     return [schemas.RecipeStepInDB.from_orm(step) for step in step.recipe.steps]
-
 
 
 @app.post(
